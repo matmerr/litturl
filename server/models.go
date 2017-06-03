@@ -3,8 +3,6 @@ package server
 import (
 	"net/http"
 	"time"
-
-	"github.com/matmerr/litturl/keygen"
 )
 
 type user struct {
@@ -19,7 +17,7 @@ type status struct {
 }
 
 type serverConfig struct {
-	keyGenerator keygen.KeyGenerator
+	keyGenerator KeyGenerator
 	api          *http.Server
 	SigningKey   string `json:"signingkey"`
 	WordsSHA256  string `json:"wordsSHA256"`

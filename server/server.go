@@ -17,7 +17,6 @@ import (
 
 	"github.com/gorilla/mux"
 	"github.com/julienschmidt/httprouter"
-	"github.com/matmerr/gurl/keygen"
 )
 
 //Config for the primary shortener server
