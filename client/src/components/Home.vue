@@ -67,9 +67,7 @@ export default {
       var ctx = this
       data.then(function (result) {
         if (result) {
-          console.log(ctx)
-          console.log(result)
-          // ctx.urlList.push({newUrl: result.comment, success: result.success, creator: 'test@test.com'})
+          ctx.urlList.push({newUrl: result.comment, success: result.success, creator: 'test@test.com'})
         }
       })
     }

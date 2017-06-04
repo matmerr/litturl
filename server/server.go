@@ -25,30 +25,20 @@ var Config serverConfig
 //JSONObject is the base interface for serializing structs
 type JSONObject interface{}
 
-func (sc serverConfig) PUT(db database, key string, ut URLTranslation) error {
+func (sc serverConfig) PUT(db Database, key string, ut URLTranslation) error {
 	return db.Put(key, ut)
 }
-func (sc serverConfig) GET(db database, key string) (URLTranslation, error) {
+func (sc serverConfig) GET(db Database, key string) (URLTranslation, error) {
 	return db.Get(key)
 }
 
-// because there are no generics, the global database is open to change,
-// but as long as the db is a type which inherits from database{}, it's fine
-// it would be cool if I could just use a base db type in the serverConfig for all
-// database types, var db GenericDatabaseType
-// #genericsplz
-var db *RedisClient
+var db Database
 
 // Start the server
 func Start() {
 	loadConfig()
 
-	var err error
-	db, err = NewRedisClient("192.168.91.137", 6379)
-
-	if err != nil {
-		log.Fatal(err)
-	}
+	db = CreateDB("192.168.91.137", 6379, "", "")
 
 	Config.keyGenerator, _ = MakeKeyGenerator(3, 4, Config.TinyAddress)
 	Config.api = &http.Server{

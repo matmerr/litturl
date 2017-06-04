@@ -6,31 +6,36 @@ import (
 	"strconv"
 	"strings"
 
+	"log"
+
 	"github.com/go-redis/redis"
 )
 
-//RedisClient is the database structure type for Redis, which
+//redisdb is the database structure type for Redis, which
 //complies with the database{} interface
-type RedisClient struct {
+type redisdb struct {
 	Address string `json:"address"`
 	client  *redis.Client
 }
 
-//NewRedisClient creates a new redis client
-func NewRedisClient(host string, port int) (*RedisClient, error) {
-	var red RedisClient
+//Newredisdb creates a new redis client
+func NewRedisdb(host string, port int) *redisdb {
+	var red redisdb
 	red.client = redis.NewClient(&redis.Options{
 		Addr:     host + ":" + strconv.Itoa(port),
 		Password: "", // no password
 		DB:       0,  // use default DB
 	})
 	t, err := red.client.Ping().Result()
+	if err != nil {
+		log.Fatal(err)
+	}
 	fmt.Println(t)
-	return &red, err
+	return &red
 }
 
 //Put adds the URLdata json to the key string in redis
-func (r RedisClient) Put(key string, urldata URLTranslation) error {
+func (r redisdb) Put(key string, urldata URLTranslation) error {
 	fmt.Println(urldata)
 	bs, _ := json.Marshal(urldata)
 	err := r.client.Set(key, bs, 0).Err()
@@ -38,7 +43,7 @@ func (r RedisClient) Put(key string, urldata URLTranslation) error {
 }
 
 //Get uses the key to return the URL translation
-func (r RedisClient) Get(key string) (URLTranslation, error) {
+func (r redisdb) Get(key string) (URLTranslation, error) {
 	fmt.Println("Key to use: ", key)
 	jsonresult, err := r.client.Get(key).Result()
 	var u URLTranslation
@@ -51,14 +56,14 @@ func (r RedisClient) Get(key string) (URLTranslation, error) {
 	return u, nil
 }
 
-func (r RedisClient) NewUser(username, password string) error {
+func (r redisdb) NewUser(username, password string) error {
 	u := user{false, username, password}
 	bs, _ := json.Marshal(u)
 	err := r.client.Set(u.Username, bs, 0).Err()
 	return err
 }
 
-func (r RedisClient) IsUser(testuser user) (bool, error) {
+func (r redisdb) IsUser(testuser user) (bool, error) {
 	_, err := r.client.Get(testuser.Username).Result()
 	if err != nil {
 		return false, err
