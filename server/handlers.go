@@ -90,7 +90,7 @@ var GetToken2 = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 	/* Set token claims */
 	claims["admin"] = true
 	claims["name"] = "mmerrick"
-	claims["exp"] = time.Now().Add(time.Hours * 24).Unix()
+	claims["exp"] = time.Now().Add(time.Hour * 24).Unix()
 
 	signingkey := []byte(Config.SigningKey)
 	/* Sign the token with our secret */
