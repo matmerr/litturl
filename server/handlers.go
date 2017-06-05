@@ -7,6 +7,8 @@ import (
 	"strings"
 	"time"
 
+	"fmt"
+
 	jwtmiddleware "github.com/auth0/go-jwt-middleware"
 	jwt "github.com/dgrijalva/jwt-go"
 	"github.com/gorilla/mux"
@@ -90,17 +92,33 @@ var GetToken2 = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 	claims["name"] = "mmerrick"
 	claims["exp"] = time.Now().Add(time.Hour * 24).Unix()
 
-	var sk = []byte(Config.SigningKey)
-
+	signingkey := []byte(Config.SigningKey)
 	/* Sign the token with our secret */
-	tokenString, _ := token.SignedString(sk)
+	tokenString, _ := token.SignedString(signingkey)
 
+	fmt.Println(tokenString)
 	/* Finally, write the token to the browser window */
-	w.Write([]byte(tokenString))
+
+	type login struct {
+		ID     string `json:"id_token"`
+		Access string `json:"access_token"`
+	}
+
+	session := login{"not_implemented", tokenString}
+	jdata, _ := json.Marshal(session)
+
+	w.Write(jdata)
 })
 
 //PostTranslation converts adds a translation to the store
 var PostTranslation = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+
+	fmt.Println()
+	fmt.Println(r.Header)
+	fmt.Println()
+
+	fmt.Println(r.Header.Get("Authorization"))
+
 	decoder := json.NewDecoder(r.Body)
 	defer r.Body.Close()
 	var u URLbase
@@ -133,5 +151,7 @@ var jwtMiddleware = jwtmiddleware.New(jwtmiddleware.Options{
 	ValidationKeyGetter: func(token *jwt.Token) (interface{}, error) {
 		return []byte(Config.SigningKey), nil
 	},
-	SigningMethod: jwt.SigningMethodHS256,
+	Debug:               true,
+	EnableAuthOnOptions: true,
+	SigningMethod:       jwt.SigningMethodHS256,
 })

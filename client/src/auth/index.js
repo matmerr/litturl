@@ -9,9 +9,10 @@ export default {
     authenticated: false
   },
 
-  Login (context, creds, redirect) {
+  Login(context, creds, redirect) {
     return context.$http.post(LOGIN_API, creds).then(response => {
-      localStorage.setItem('id_token', response.body)
+      localStorage.setItem('id_token', response.body.id_token)
+      localStorage.setItem('access_token', response.body.access_token)
       this.user.authenticated = true
 
       if (redirect) {
@@ -24,14 +25,13 @@ export default {
     })
   },
 
-  Signup (context, creds, redirect) {
+  Signup(context, creds, redirect) {
     context.$http.post(SIGNUP_API, creds, (data) => {
       localStorage.setItem('id_token', data.id_token)
-
+      localStorage.setItem('access_token', data.access_token)
       this.user.authenticated = true
 
       if (redirect) {
-        console.log(redirect)
         context.$router.go(redirect)
       }
     }).error((err) => {
@@ -39,7 +39,7 @@ export default {
     })
   },
 
-  isAuthenticated () {
+  isAuthenticated() {
     var jwt = localStorage.getItem('id_token')
     if (jwt) {
       return true
@@ -47,9 +47,16 @@ export default {
     return false
   },
 
-  Logout () {
+  Logout() {
     localStorage.removeItem('id_token')
+    localStorage.removeItem('access_token')
     this.user.authenticated = false
+  },
+
+  getAuthHeader() {
+    return {
+      'Authorization': 'Bearer ' + localStorage.getItem('access_token')
+    }
   }
 
 }

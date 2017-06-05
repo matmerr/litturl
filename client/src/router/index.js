@@ -38,7 +38,7 @@ const router = new Router({
 
 export default router
 
-function requireAuthenticated (to, from, next) {
+function requireAuthenticated(to, from, next) {
   if (auth.isAuthenticated()) {
     next()
   } else {

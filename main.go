@@ -8,9 +8,7 @@ import (
 
 func main() {
 
-	//go func() {
 	server.Start()
-	//}()
 
 	var wg sync.WaitGroup
 	wg.Add(1)

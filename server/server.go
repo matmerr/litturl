@@ -59,7 +59,9 @@ func Start() {
 	apirtr.Handle("/user/login", GetToken2).Methods("POST")
 	apirtr.Handle("/token2", jwtMiddleware.Handler(GetToken)).Methods("GET")
 	apirtr.Handle("/json", GetJSON).Methods("GET")
+	//apirtr.Handle("/add", jwtMiddleware.Handler(PostTranslation)).Methods("POST")
 	apirtr.Handle("/add", PostTranslation).Methods("POST")
+
 	go func(rtr http.Handler) {
 		log.Println("API listening on", "0.0.0.0:8001")
 		log.Fatal(http.ListenAndServe("0.0.0.0:8001", rtr))
@@ -90,15 +92,15 @@ func MakeURLTranslation(oldURL string) URLTranslation {
 
 func writeStatus(w http.ResponseWriter, comment string, success bool, httpstatus int) {
 	s := status{comment, success}
-	j, _ := json.Marshal(s)
+	jdata, _ := json.Marshal(s)
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.WriteHeader(httpstatus)
-	fmt.Fprintf(w, "%s", j)
+	fmt.Fprintf(w, "%s", jdata)
 }
 
 func writeJSON(w http.ResponseWriter, jo JSONObject, httpstatus int) {
-	jb, _ := json.Marshal(jo)
+	jdata, _ := json.Marshal(jo)
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.WriteHeader(httpstatus)
-	fmt.Fprintf(w, "%s", jb)
+	fmt.Fprintf(w, "%s", jdata)
 }
