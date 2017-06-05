@@ -90,7 +90,7 @@ var GetToken2 = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 	/* Set token claims */
 	claims["admin"] = true
 	claims["name"] = "mmerrick"
-	claims["exp"] = time.Now().Add(time.Hour * 24).Unix()
+	claims["exp"] = time.Now().Add(time.Hours * 24).Unix()
 
 	signingkey := []byte(Config.SigningKey)
 	/* Sign the token with our secret */
@@ -112,12 +112,6 @@ var GetToken2 = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 
 //PostTranslation converts adds a translation to the store
 var PostTranslation = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-
-	fmt.Println()
-	fmt.Println(r.Header)
-	fmt.Println()
-
-	fmt.Println(r.Header.Get("Authorization"))
 
 	decoder := json.NewDecoder(r.Body)
 	defer r.Body.Close()
@@ -151,7 +145,6 @@ var jwtMiddleware = jwtmiddleware.New(jwtmiddleware.Options{
 	ValidationKeyGetter: func(token *jwt.Token) (interface{}, error) {
 		return []byte(Config.SigningKey), nil
 	},
-	Debug:               true,
 	EnableAuthOnOptions: true,
 	SigningMethod:       jwt.SigningMethodHS256,
 })

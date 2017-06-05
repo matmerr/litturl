@@ -68,14 +68,10 @@ export default {
       this.$refs.snackbar.open()
     },
     postJson(object, apiUrl, redirect) {
-      return this.$http.post(apiUrl, object).then(response => {
-        // var jsonResponse = JSON.parse(response.body)
-
-        // console.log(auth.getAuthHeader())
-        // return jsonResponse
+      return this.$http.post(apiUrl, object, {
+        headers: auth.getAuthHeader()
+      }).then(response => {
         return response.body
-      }, {
-        headers: {'Authorization': 'okokok'}
       }).catch(e => {
         console.log(auth.getAuthHeader())
         return e

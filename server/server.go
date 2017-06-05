@@ -59,8 +59,8 @@ func Start() {
 	apirtr.Handle("/user/login", GetToken2).Methods("POST")
 	apirtr.Handle("/token2", jwtMiddleware.Handler(GetToken)).Methods("GET")
 	apirtr.Handle("/json", GetJSON).Methods("GET")
-	//apirtr.Handle("/add", jwtMiddleware.Handler(PostTranslation)).Methods("POST")
-	apirtr.Handle("/add", PostTranslation).Methods("POST")
+	apirtr.Handle("/add", jwtMiddleware.Handler(PostTranslation)).Methods("POST")
+	//apirtr.Handle("/add", PostTranslation).Methods("POST")
 
 	go func(rtr http.Handler) {
 		log.Println("API listening on", "0.0.0.0:8001")
