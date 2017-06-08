@@ -16,8 +16,10 @@ import (
 	"time"
 
 	"github.com/gorilla/mux"
-	"github.com/julienschmidt/httprouter"
 )
+
+//ServerStatus is the type which is sent when /status is requested on the api port
+var ServerStatus serverStatus
 
 //Config for the primary shortener server
 var Config serverConfig
@@ -54,7 +56,9 @@ func Start() {
 	}(urlrtr)
 
 	// setup API shortner redirect
+	SetServerStatus("server ready", true)
 	apirtr := mux.NewRouter()
+	apirtr.Handle("/status", GetStatus).Methods("GET")
 	apirtr.Handle("/user/login2", GetToken).Methods("GET")
 	apirtr.Handle("/user/login", GetToken2).Methods("POST")
 	apirtr.Handle("/token2", jwtMiddleware.Handler(GetToken)).Methods("GET")
@@ -65,9 +69,6 @@ func Start() {
 		log.Fatal(http.ListenAndServe("0.0.0.0:8001", rtr))
 	}(apirtr)
 
-	webui := httprouter.New()
-	webui.ServeFiles("/*filepath", http.Dir("client"))
-	log.Fatal(http.ListenAndServe(":8081", webui))
 }
 
 //Shutdown here we send the signal to flush redis, and stop the webserver
@@ -94,6 +95,12 @@ func writeStatus(w http.ResponseWriter, comment string, success bool, httpstatus
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.WriteHeader(httpstatus)
 	fmt.Fprintf(w, "%s", j)
+}
+
+//SetServerStatus accepts a string describing a state, and if that state is ready
+func SetServerStatus(newcomment string, ready bool) {
+	ServerStatus.Comment = newcomment
+	ServerStatus.Ready = ready
 }
 
 func writeJSON(w http.ResponseWriter, jo JSONObject, httpstatus int) {

@@ -1,6 +1,6 @@
 <template>
   <div id="login">
-
+  
     <md-card>
       <md-card-header>
         <div class="md-title">
@@ -8,29 +8,29 @@
         </div>
       </md-card-header>
       <md-card-content>
-       <md-layout md-gutter>
-      <md-input-container>
-        <md-icon class="md-primary">perm_identity</md-icon>
-          <label>Username</label>
-        <md-input required v-model="credentials.username"></md-input>
-      </md-input-container>
-      <md-input-container md-has-password>
-        <md-icon class="md-primary">lock</md-icon>
-          <label>Password</label>
-        <md-input required type="password" v-model="credentials.password"></md-input>
-      </md-input-container>
-      <md-layout md-align="end">
-        <span class="md-caption">* indicates required</span>
-      </md-layout>
-
-      </md-layout>
-      <md-layout md-align="center">
+        <md-layout md-gutter>
+          <md-input-container>
+            <md-icon class="md-primary">perm_identity</md-icon>
+            <label>Username</label>
+            <md-input required v-model="credentials.username"></md-input>
+          </md-input-container>
+          <md-input-container md-has-password>
+            <md-icon class="md-primary">lock</md-icon>
+            <label>Password</label>
+            <md-input required type="password" v-model="credentials.password"></md-input>
+          </md-input-container>
+          <md-layout md-align="end">
+            <span class="md-caption">* indicates required</span>
+          </md-layout>
+  
+        </md-layout>
+        <md-layout md-align="center">
           <md-button class="md-raised md-primary" @click.native="Login()">Login</md-button>
-      </md-layout>
+        </md-layout>
       </md-card-content>
-      
+  
     </md-card>
-    
+  
   </div>
 </template>
 

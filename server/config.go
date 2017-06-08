@@ -15,7 +15,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/julienschmidt/httprouter"
+	"github.com/gorilla/mux"
 )
 
 func loadConfig() {
@@ -58,11 +58,15 @@ func createConfig() {
 	// signal to this channel to stop config server
 	stopserver = make(chan bool)
 
-	api := httprouter.New()
-	api.POST("/config", PostConfig)
+	SetServerStatus("config missing", false)
 
-	srv := http.Server{Addr: ":8000", Handler: api}
-	fmt.Println("opening config api on", srv.Addr)
+	apirtr := mux.NewRouter()
+	apirtr.Handle("/status", GetStatus).Methods("GET")
+	apirtr.Handle("/config", PostConfig).Methods("POST")
+
+	srv := http.Server{Addr: ":8001", Handler: apirtr}
+
+	fmt.Println("opening config api on :8001")
 
 	go func() {
 		if err := srv.ListenAndServe(); err != nil {
@@ -73,7 +77,8 @@ func createConfig() {
 	// wait until stop server signal is received
 	<-stopserver
 
-	log.Println("config accepted")
+	log.Println("config loaded")
+	SetServerStatus("config loaded", true)
 
 	// wait 10 seconds before shutting config server down
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
@@ -91,7 +96,7 @@ func createConfig() {
 }
 
 //PostConfig converts adds a translation to the store
-func PostConfig(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
+var PostConfig = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 	decoder := json.NewDecoder(r.Body)
 	defer r.Body.Close()
 	err := decoder.Decode(&Config)
@@ -107,7 +112,7 @@ func PostConfig(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 		writeStatus(w, "successfully loaded config", true, 200)
 		stopserver <- true
 	}
-}
+})
 
 // HashWords ok
 func HashWords(fpath string) string {

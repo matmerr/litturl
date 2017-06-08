@@ -16,6 +16,11 @@ type status struct {
 	Success bool   `json:"success"`
 }
 
+type serverStatus struct {
+	Comment string `json:"comment"`
+	Ready   bool   `json:"ready"`
+}
+
 type serverConfig struct {
 	keyGenerator KeyGenerator
 	api          *http.Server

@@ -2,6 +2,7 @@ package server
 
 import (
 	"encoding/json"
+	"fmt"
 	"log"
 	"net/http"
 	"strings"
@@ -127,6 +128,13 @@ var PostTranslation = http.HandlerFunc(func(w http.ResponseWriter, r *http.Reque
 		// the url mapping already exists, but we'll retun the new url anyway
 		writeStatus(w, ut.NewURL, true, 200)
 	}
+})
+
+//GetStatus handler writes the current server status indicated in the global server status struct
+var GetStatus = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	j, _ := json.Marshal(ServerStatus)
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	fmt.Fprintf(w, "%s", j)
 })
 
 var jwtMiddleware = jwtmiddleware.New(jwtmiddleware.Options{

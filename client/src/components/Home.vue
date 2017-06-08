@@ -27,16 +27,15 @@
           </md-table-header>
           <md-table-body>
             <md-table-row v-for="url in urlList" :key="url">
+              <md-card>
               <md-table-cell>{{url.newUrl}}</md-table-cell>
               <md-table-cell>{{url.success}}</md-table-cell>
               <md-table-cell>{{url.creator}}</md-table-cell>
+              </md-card>
             </md-table-row>
           </md-table-body>
         </md-table>
       </md-card>
-  
-  
-   
   </div>
 </template>
 
