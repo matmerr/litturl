@@ -64,11 +64,8 @@ func Start() {
 	apirtr.Handle("/token2", jwtMiddleware.Handler(GetToken)).Methods("GET")
 	apirtr.Handle("/json", GetJSON).Methods("GET")
 	apirtr.Handle("/add", PostTranslation).Methods("POST")
-	go func(rtr http.Handler) {
-		log.Println("API listening on", "0.0.0.0:8001")
-		log.Fatal(http.ListenAndServe("0.0.0.0:8001", rtr))
-	}(apirtr)
-
+	log.Println("API listening on", "0.0.0.0:8001")
+	log.Fatal(http.ListenAndServe("0.0.0.0:8001", apirtr))
 }
 
 //Shutdown here we send the signal to flush redis, and stop the webserver
