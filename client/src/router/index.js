@@ -26,12 +26,14 @@ const router = new Router({
     {
       path: '/login',
       name: 'login',
-      component: Login
+      component: Login,
+      beforeEnter: isReady
     },
     {
-      path: '/signup',
+      path: '/config',
       name: 'signup',
-      component: Signup
+      component: Signup,
+      beforeEnter: needConfig
     }
   ]
 })
@@ -44,4 +46,28 @@ function requireAuthenticated (to, from, next) {
   } else {
     router.replace('/login')
   }
+}
+
+function isReady (to, from, next) {
+  statusRedirect(to, from, next, true, 'server ready', '/config')
+}
+
+function needConfig (to, from, next) {
+  statusRedirect(to, from, next, false, 'config missing', '/login')
+}
+
+function statusRedirect (to, from, next, resBool, resComment, ifNotRedirectTo) {
+  var xhr = new XMLHttpRequest()
+  xhr.open('GET', '/api/status', true)
+  xhr.onreadystatechange = function (e) {
+    if (xhr.readyState === 4) {
+      var response = JSON.parse(xhr.responseText)
+      if (response.ready === resBool && response.comment === resComment) {
+        next()
+      } else {
+        router.replace(ifNotRedirectTo)
+      }
+    }
+  }
+  xhr.send()
 }
