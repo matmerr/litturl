@@ -53,7 +53,7 @@ export default {
       user: auth.user,
       err: '',
       contacts: [],
-      loginStatus: 'Login',
+      loginStatus: 'Logout',
       urlform: ''
     }
   },

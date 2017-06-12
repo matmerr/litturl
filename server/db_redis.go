@@ -18,8 +18,8 @@ type redisdb struct {
 	client  *redis.Client
 }
 
-//Newredisdb creates a new redis client
-func NewRedisdb(host string, port int) *redisdb {
+//NewRedisdb creates a new redis client
+func NewRedisdb(host string, port int) (*redisdb, error) {
 	var red redisdb
 	red.client = redis.NewClient(&redis.Options{
 		Addr:     host + ":" + strconv.Itoa(port),
@@ -31,7 +31,7 @@ func NewRedisdb(host string, port int) *redisdb {
 		log.Fatal(err)
 	}
 	fmt.Println(t)
-	return &red
+	return &red, err
 }
 
 //Put adds the URLdata json to the key string in redis

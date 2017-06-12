@@ -22,12 +22,15 @@ type serverStatus struct {
 }
 
 type serverConfig struct {
-	keyGenerator KeyGenerator
-	api          *http.Server
-	SigningKey   string `json:"signingkey"`
-	WordsSHA256  string `json:"wordsSHA256"`
-	TinyAddress  string `json:"tinyaddress"`
-	BindAddress  string `json:"bindaddress"`
+	keyGenerator    KeyGenerator
+	api             *http.Server
+	SigningKey      []byte `json:"signingkey"`
+	WordsSHA256     string `json:"wordsSHA256"`
+	TinyAddress     string `json:"tinyaddress"`
+	DatabaseType    string `json:"db_type"`
+	DatabaseAddress string `json:"db_address"`
+	DatabasePort    int    `json:"db_port"`
+	bindAddress     string
 }
 
 //URLTranslation type for the value in redis

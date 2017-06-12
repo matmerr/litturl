@@ -2,7 +2,6 @@ import router from '../router'
 const API = '/api/'
 const USER_API = API + 'user/'
 const LOGIN_API = USER_API + 'login'
-const SIGNUP_API = USER_API + 'create/'
 
 export default {
   user: {
@@ -11,7 +10,8 @@ export default {
 
   Login (context, creds, redirect) {
     return context.$http.post(LOGIN_API, creds).then(response => {
-      localStorage.setItem('id_token', response.body)
+      localStorage.setItem('id_token', response.body.id_token)
+      localStorage.setItem('id_token', response.body.auth_token)
       this.user.authenticated = true
 
       if (redirect) {
@@ -23,22 +23,6 @@ export default {
       return e.message
     })
   },
-
-  Signup (context, creds, redirect) {
-    context.$http.post(SIGNUP_API, creds, (data) => {
-      localStorage.setItem('id_token', data.id_token)
-
-      this.user.authenticated = true
-
-      if (redirect) {
-        console.log(redirect)
-        context.$router.go(redirect)
-      }
-    }).error((err) => {
-      context.error = err
-    })
-  },
-
   isAuthenticated () {
     var jwt = localStorage.getItem('id_token')
     if (jwt) {

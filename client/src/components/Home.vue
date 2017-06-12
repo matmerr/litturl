@@ -15,7 +15,7 @@
             <md-input v-model="urlform"></md-input>
           </md-input-container>
           <md-button class="md-raised md-primary" @click.native="clearTable()">Clear Table</md-button>
-          <md-button class="md-raised md-primary" @click.native="postJson()">Shorten</md-button>
+          <md-button class="md-raised md-primary" @click.native="postURL()">Shorten</md-button>
         </md-card-content>
         <md-table>
           <md-table-header>
@@ -27,11 +27,9 @@
           </md-table-header>
           <md-table-body>
             <md-table-row v-for="url in urlList" :key="url">
-              <md-card>
               <md-table-cell>{{url.newUrl}}</md-table-cell>
               <md-table-cell>{{url.success}}</md-table-cell>
               <md-table-cell>{{url.creator}}</md-table-cell>
-              </md-card>
             </md-table-row>
           </md-table-body>
         </md-table>
@@ -61,7 +59,7 @@ export default {
       this.contacts.splice(0, this.url_list.length)
     },
 
-    postJson: function () {
+    postURL: function () {
       var data = Promise.resolve(this.$parent.postJson(JSON.stringify({ url: this.urlform }), API_ADDURL))
       var ctx = this
       data.then(function (result) {

@@ -2,6 +2,7 @@ package server
 
 import (
 	"context"
+	"crypto/rand"
 	"crypto/sha256"
 	"encoding/hex"
 	"encoding/json"
@@ -14,6 +15,10 @@ import (
 	"path/filepath"
 	"strings"
 	"time"
+
+	"crypto/rsa"
+
+	"crypto/x509"
 
 	"github.com/gorilla/mux"
 )
@@ -90,6 +95,12 @@ func createConfig() {
 	// generate a hash for the words list, and save to config
 	Config.WordsSHA256 = HashWords("conf/nounlist.txt")
 
+	// generate a signing key for the jwt tokens.
+	// NOTE: secrets don't have to be used with asymmetric keys,
+	// they can just be long, but this rsa lib is easy to use
+
+	key, _ := rsa.GenerateKey(rand.Reader, 1024)
+	Config.SigningKey = x509.MarshalPKCS1PrivateKey(key)
 	// flush to disk
 	saveConfig()
 
@@ -97,18 +108,47 @@ func createConfig() {
 
 //PostConfig converts adds a translation to the store
 var PostConfig = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	type baseConfig struct {
+		Username        string `json:"username"`
+		Password        string `json:"password"`
+		TinyAddress     string `json:"tinyaddress"`
+		DatabaseType    string `json:"db_type"`
+		DatabaseAddress string `json:"db_address"`
+		DatabasePort    int    `json:"db_port"`
+	}
+	var init baseConfig
 	decoder := json.NewDecoder(r.Body)
 	defer r.Body.Close()
-	err := decoder.Decode(&Config)
+	err := decoder.Decode(&init)
 	if err != nil {
+		fmt.Println("THIS ERROR")
 		fmt.Println(err)
 		writeStatus(w, "invalid config", false, 200)
 	} else {
 		// if the tiny address supplied doesn't have a trailing /, add one on
 		// required for returning the url and keys
-		if (Config.TinyAddress[len(Config.TinyAddress)-1]) != '/' {
-			Config.TinyAddress = Config.TinyAddress + "/"
+		if (init.TinyAddress[len(init.TinyAddress)-1]) != '/' {
+			init.TinyAddress = init.TinyAddress + "/"
 		}
+		fmt.Println(init)
+		Config.bindAddress = "0.0.0.0"
+		Config.TinyAddress = init.TinyAddress
+		Config.DatabaseType = init.DatabaseType
+		Config.DatabaseAddress = init.DatabaseAddress
+		Config.DatabasePort = init.DatabasePort
+
+		// validate the connection to the database
+		err := ConnectDB()
+		if err != nil {
+			log.Fatal(err)
+			writeStatus(w, err.Error(), true, 200)
+			return
+		}
+
+		// at this point the connection to the db has been established,
+		// let's create the supplied user
+		db.NewUser(init.Username, init.Password)
+
 		writeStatus(w, "successfully loaded config", true, 200)
 		stopserver <- true
 	}

@@ -2,7 +2,7 @@ import Vue from 'vue'
 import Router from 'vue-router'
 import Login from '@/components/Login'
 import Home from '@/components/Home'
-import Signup from '@/components/Signup'
+import Config from '@/components/Config'
 import auth from '../auth'
 
 Vue.use(Router)
@@ -31,8 +31,8 @@ const router = new Router({
     },
     {
       path: '/config',
-      name: 'signup',
-      component: Signup,
+      name: 'config',
+      component: Config,
       beforeEnter: needConfig
     }
   ]

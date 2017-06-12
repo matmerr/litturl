@@ -1,6 +1,8 @@
 {
-  "signingkey": "19",
+  "signingkey": "MIICXAIBAAKBgQDMdbFeHT/8SyUcovTiOSibGbIQvdDKVAicszisd6qXhw9IprWDgc8Pe0TlxVyJZUZQBKccSCWcNRUXMM+YwCSNofv4G7SJUaUC+2NKGE+hyzx9bdKJELORTVoGPUgta+xPQO+pIhyWJe7v+9Ub0EuZAjZCmiOaj8xjUAMpXxLJywIDAQABAoGASRCV/cf+Ia7I6F7jnCRI+oRIOetbPbKiET2KtzdcYyIEuDW7D+/HiwTGLkZFN2RVqCrBfT3bEuN1UgBDb5baeI8COOE9Lh72p5dgT0qKRYYHmg078X8VqbxTGJlawYD1O+GAzN6/Av518d1CtSCY7jnuSAeeh+K3155bP5hXYiECQQDaE2N9RHnwDR/kksD+Mmyd4PVK37fN0dQzhBkRH7T4vIq+fgnk6OI8N0IeGrGDZOgsWAA1SUo40IgcOhQzFnovAkEA8AQgoHhf39BktOAdmVT0SdpUGL05/T1fr6qWKH4MrNPlUNqpyAZXumYLT8CZDFfQ2nQfFqXDiXy6H5kCa0OvJQJAFKupzoHjHQHheAUBDhcxfHWKSqKSBYxSFN/8kEb1HG6iqBPCVFROvW5vcfMNyGqUJz/gJSzhQClj/Wjz6TPEOQJBAN4TE5Umi57slKF+1CQxJK7IohMZ0nPru4MwFSt2JYgrrvu2tmzq4XUIQeMS0wlGn2nhE3rC+T9W9meSDVjuETkCQFTLcz9AUmnj4tXLDDkNfqaN6eGBhoshdelP5M9ivn3jKJY3exnB8inPj/7BlInEIan0golqlvRrW7rznNRCOBM=",
   "wordsSHA256": "c406c64aaa1e91eec374ca37cbcd824a750de82a1b43554a3097695aa0718a76",
-  "tinyaddress": "http://127.0.0.1/",
-  "bindaddress": "0.0.0.0"
+  "tinyaddress": "https://mat.ski/",
+  "db_type": "Redis",
+  "db_address": "192.168.91.137",
+  "db_port": 6379
 }

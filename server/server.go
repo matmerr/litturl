@@ -40,13 +40,20 @@ var db Database
 func Start() {
 	loadConfig()
 
-	db = CreateDB("192.168.91.137", 6379, "", "")
+	// if there is no existing connection to the database
+	// reloading config from cold start, set it up
+	if db == nil {
+		err := ConnectDB()
+		if err != nil {
+			log.Fatal(err)
+			return
+		}
+	}
 
 	Config.keyGenerator, _ = MakeKeyGenerator(3, 4, Config.TinyAddress)
 	Config.api = &http.Server{
-		Addr: Config.BindAddress + ":8000",
+		Addr: Config.bindAddress + ":8000",
 	}
-
 	// setup URL shortener redirect point
 	urlrtr := mux.NewRouter()
 	urlrtr.Handle("/{target}", GetRedirect).Methods("GET")

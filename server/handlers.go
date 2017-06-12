@@ -22,7 +22,6 @@ var GetToken = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 
 	/* Set token claims */
 	claims["admin"] = true
-	claims["name"] = "mmerrick"
 	claims["exp"] = time.Now().Add(time.Hour * 24).Unix()
 
 	var sk = []byte(Config.SigningKey)
@@ -93,10 +92,10 @@ var GetToken2 = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 
 	var sk = []byte(Config.SigningKey)
 
-	/* Sign the token with our secret */
+	// sign token
 	tokenString, _ := token.SignedString(sk)
 
-	/* Finally, write the token to the browser window */
+	// Finally, write token back
 	w.Write([]byte(tokenString))
 })
 

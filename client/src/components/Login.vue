@@ -35,7 +35,6 @@
 </template>
 
 <script>
-// import Hello from './components/Hello'
 
 import auth from '../auth'
 
