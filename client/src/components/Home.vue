@@ -39,7 +39,7 @@
 
 <script>
 
-const API_ADDURL = '/api/add'
+const API_ADDURL = '/api/url/add'
 
 export default {
   name: 'app',

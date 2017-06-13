@@ -69,9 +69,9 @@ export default {
       this.$refs.snackbar.open()
     },
     postJson (object, apiUrl, redirect) {
-      return this.$http.post(apiUrl, object).then(response => {
-        // var jsonResponse = JSON.parse(response.body)
-
+      return this.$http.post(apiUrl, object, {
+        headers: auth.getAuthHeader()
+      }).then(response => {
         if (redirect) {
           this.router.push(redirect)
         }
@@ -90,11 +90,5 @@ export default {
 </script>
 
 <style lang="scss">
-@import 'stylesheets/variables.scss';
-
 $sizebar-size: 280px;
-
-[v-cloak] {
-  display: none;
-}
 </style>

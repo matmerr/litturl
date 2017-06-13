@@ -53,8 +53,6 @@ func saveConfig() {
 	}
 }
 
-var stopserver chan bool
-
 // sample curl command
 // curl -H "Content-Type: application/json" -X POST -d '{"signingkey":"19","tinyaddress":"http://127.0.0.1/", "bindaddress":"0.0.0.0" }' http://192.168.91.1:8000/config
 func createConfig() {

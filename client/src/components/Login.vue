@@ -74,6 +74,3 @@ export default {
   max-width: 450px;
 }
 </style>
-
-#margin-left: 240px;
-#margin-right: 240px; 

@@ -11,7 +11,7 @@ export default {
   Login (context, creds, redirect) {
     return context.$http.post(LOGIN_API, creds).then(response => {
       localStorage.setItem('id_token', response.body.id_token)
-      localStorage.setItem('id_token', response.body.auth_token)
+      localStorage.setItem('access_token', response.body.access_token)
       this.user.authenticated = true
 
       if (redirect) {
@@ -29,6 +29,13 @@ export default {
       return true
     }
     return false
+  },
+
+  getAuthHeader () {
+    console.log(localStorage.getItem('access_token'))
+    return {
+      'Authorization': 'Bearer ' + localStorage.getItem('access_token')
+    }
   },
 
   Logout () {

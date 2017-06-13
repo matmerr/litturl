@@ -13,26 +13,6 @@ import (
 	"github.com/gorilla/mux"
 )
 
-var GetToken = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-	/* Create the token */
-	token := jwt.New(jwt.SigningMethodHS256)
-
-	/* Create a map to store our claims*/
-	claims := token.Claims.(jwt.MapClaims)
-
-	/* Set token claims */
-	claims["admin"] = true
-	claims["exp"] = time.Now().Add(time.Hour * 24).Unix()
-
-	var sk = []byte(Config.SigningKey)
-
-	/* Sign the token with our secret */
-	tokenString, _ := token.SignedString(sk)
-
-	/* Finally, write the token to the browser window */
-	w.Write([]byte(tokenString))
-})
-
 //GetRedirect gets the stranslation from the keystore, then issues a redirect
 var GetRedirect = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
@@ -68,7 +48,7 @@ var GetJSON = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 	writeJSON(w, ut, 200)
 })
 
-var GetToken2 = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+var UserLogin = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 
 	decoder := json.NewDecoder(r.Body)
 	defer r.Body.Close()
@@ -90,13 +70,22 @@ var GetToken2 = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 	claims["name"] = "mmerrick"
 	claims["exp"] = time.Now().Add(time.Hour * 24).Unix()
 
-	var sk = []byte(Config.SigningKey)
+	signingkey := []byte(Config.SigningKey)
+	/* Sign the token with our secret */
+	tokenString, _ := token.SignedString(signingkey)
 
-	// sign token
-	tokenString, _ := token.SignedString(sk)
+	fmt.Println(tokenString)
+	/* Finally, write the token to the browser window */
 
-	// Finally, write token back
-	w.Write([]byte(tokenString))
+	type login struct {
+		ID     string `json:"id_token"`
+		Access string `json:"access_token"`
+	}
+
+	session := login{"not_implemented", tokenString}
+	jdata, _ := json.Marshal(session)
+
+	w.Write(jdata)
 })
 
 //PostTranslation converts adds a translation to the store

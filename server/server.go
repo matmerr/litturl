@@ -9,6 +9,7 @@ package server
 // curl -H "Content-Type: application/json" -X POST -d '{"apikey":"lolkey","url":"github.com/matmerr"}' http://192.168.91.1:8000/add
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"log"
@@ -34,6 +35,9 @@ func (sc serverConfig) GET(db Database, key string) (URLTranslation, error) {
 	return db.Get(key)
 }
 
+// this channel is reserved for stopping webservers
+var stopserver chan bool
+
 var db Database
 
 // Start the server
@@ -50,29 +54,56 @@ func Start() {
 		}
 	}
 
+	// create the keygenerator used for
 	Config.keyGenerator, _ = MakeKeyGenerator(3, 4, Config.TinyAddress)
-	Config.api = &http.Server{
-		Addr: Config.bindAddress + ":8000",
-	}
+
 	// setup URL shortener redirect point
 	urlrtr := mux.NewRouter()
 	urlrtr.Handle("/{target}", GetRedirect).Methods("GET")
-	go func(rtr http.Handler) {
-		log.Println("URL Redirect listening on", Config.api.Addr)
-		log.Fatal(http.ListenAndServe(Config.api.Addr, rtr))
-	}(urlrtr)
+
+	Config.urlServer = http.Server{
+		Addr:    Config.bindAddress + ":8000",
+		Handler: urlrtr,
+	}
+
+	// start the URL server in a seperate goroutine
+	go func() {
+		log.Println("URL Redirect listening on", Config.urlServer.Addr)
+		if err := Config.urlServer.ListenAndServe(); err != nil {
+			log.Println(err)
+		}
+	}()
 
 	// setup API shortner redirect
 	SetServerStatus("server ready", true)
 	apirtr := mux.NewRouter()
 	apirtr.Handle("/status", GetStatus).Methods("GET")
-	apirtr.Handle("/user/login2", GetToken).Methods("GET")
-	apirtr.Handle("/user/login", GetToken2).Methods("POST")
-	apirtr.Handle("/token2", jwtMiddleware.Handler(GetToken)).Methods("GET")
-	apirtr.Handle("/json", GetJSON).Methods("GET")
-	apirtr.Handle("/add", PostTranslation).Methods("POST")
+	apirtr.Handle("/user/login", UserLogin).Methods("POST")
+	apirtr.Handle("/url/add", jwtMiddleware.Handler(PostTranslation)).Methods("POST")
 	log.Println("API listening on", "0.0.0.0:8001")
-	log.Fatal(http.ListenAndServe("0.0.0.0:8001", apirtr))
+
+	Config.apiServer = http.Server{
+		Addr:    "0.0.0.0:8001",
+		Handler: apirtr,
+	}
+
+	go func() {
+		if err := Config.apiServer.ListenAndServe(); err != nil {
+			log.Println(err)
+		}
+	}()
+
+	// wait until stop server signal is received
+	<-stopserver
+
+	// wait 10 seconds before shutting config server down
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	// ensure all paths cancel, avoid context leak
+	defer cancel()
+
+	Config.apiServer.Shutdown(ctx)
+	Config.urlServer.Shutdown(ctx)
+	return
 }
 
 //Shutdown here we send the signal to flush redis, and stop the webserver
