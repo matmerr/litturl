@@ -3,6 +3,6 @@
   "wordsSHA256": "c406c64aaa1e91eec374ca37cbcd824a750de82a1b43554a3097695aa0718a76",
   "tinyaddress": "https://mat.ski/",
   "db_type": "Redis",
-  "db_address": "192.168.91.137",
+  "db_address": "localhost",
   "db_port": 6379
 }

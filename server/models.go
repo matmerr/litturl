@@ -45,5 +45,6 @@ type URLTranslation struct {
 
 //URLbase the datastructure to be used when POSTing to the api server
 type URLbase struct {
-	URL string `json:"url"`
+	URL    string `json:"url"`
+	Custom string `json:"custom"`
 }

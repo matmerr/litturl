@@ -77,6 +77,8 @@ func Start() {
 	// setup API shortner redirect
 	SetServerStatus("server ready", true)
 	apirtr := mux.NewRouter()
+	apirtr.Handle("/settings", GetSettings).Methods("GET")
+	apirtr.Handle("/settings", PostSettings).Methods("POST")
 	apirtr.Handle("/status", GetStatus).Methods("GET")
 	apirtr.Handle("/user/login", UserLogin).Methods("POST")
 	apirtr.Handle("/url/add", jwtMiddleware.Handler(PostTranslation)).Methods("POST")

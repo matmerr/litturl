@@ -68,6 +68,9 @@ export default {
       this.err = errormsg
       this.$refs.snackbar.open()
     },
+    redirect (target) {
+      console.log(this.router)
+    },
     postJson (object, apiUrl, redirect) {
       return this.$http.post(apiUrl, object, {
         headers: auth.getAuthHeader()

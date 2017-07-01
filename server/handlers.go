@@ -101,28 +101,58 @@ var PostTranslation = http.HandlerFunc(func(w http.ResponseWriter, r *http.Reque
 		u.URL = "http://" + u.URL
 	}
 
-	// here we would validate apikey, but that's a TODO
-	ut := MakeURLTranslation(u.URL)
-	log.Println("POST: struct generated", ut)
+	uTranslation := MakeURLTranslation(u.URL)
 
-	_, err = Config.GET(db, ut.Wordkey)
+	// if we have a custom URL specified, we use that instead
+	if len(u.Custom) > 0 {
+		uTranslation.Wordkey = u.Custom
+	}
+
+	log.Println("POST: struct generated", uTranslation)
+
+	_, err = Config.GET(db, uTranslation.Wordkey)
 	// err == redis.Nil, then there is no key and we can add
 	// run this check to preserve click count and creation time
 	if err != nil {
-		writeStatus(w, ut.NewURL, true, 200)
-		Config.PUT(db, ut.Wordkey, ut)
+		writeStatus(w, uTranslation.NewURL, true, 200)
+		Config.PUT(db, uTranslation.Wordkey, uTranslation)
 
 	} else {
 		// the url mapping already exists, but we'll retun the new url anyway
-		writeStatus(w, ut.NewURL, true, 200)
+		writeStatus(w, uTranslation.NewURL, true, 200)
 	}
 })
 
 //GetStatus handler writes the current server status indicated in the global server status struct
 var GetStatus = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 	j, _ := json.Marshal(ServerStatus)
-	w.Header().Set("Access-Control-Allow-Origin", "*")
 	fmt.Fprintf(w, "%s", j)
+})
+
+// GetSettings will expose all public settings
+var GetSettingss = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+
+	// Normally we could just serialize the Config, but it contains net/http which has a mutex lock
+	type settings struct {
+		WordsSHA256     string `json:"wordsSHA256"`
+		TinyAddress     string `json:"tinyaddress"`
+		DatabaseType    string `json:"db_type"`
+		DatabaseAddress string `json:"db_address"`
+		DatabasePort    int    `json:"db_port"`
+	}
+
+	var settmp settings
+	settmp.WordsSHA256 = Config.WordsSHA256
+	settmp.TinyAddress = Config.TinyAddress
+	settmp.DatabaseType = Config.DatabaseType
+	settmp.DatabasePort = Config.DatabasePort
+
+	j, _ := json.Marshal(settmp)
+	fmt.Fprintf(w, "%s", j)
+})
+
+var PostSettings = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+
 })
 
 var jwtMiddleware = jwtmiddleware.New(jwtmiddleware.Options{
