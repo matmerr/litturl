@@ -130,7 +130,7 @@ var GetStatus = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 })
 
 // GetSettings will expose all public settings
-var GetSettingss = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+var GetSettings = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 
 	// Normally we could just serialize the Config, but it contains net/http which has a mutex lock
 	type settings struct {
@@ -152,8 +152,17 @@ var GetSettingss = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request)
 })
 
 var PostSettings = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-
+	// TODO
 })
+
+
+func IndexHandler(entrypoint string) func(w http.ResponseWriter, r *http.Request) {
+	fn := func(w http.ResponseWriter, r *http.Request) {
+		http.ServeFile(w, r, entrypoint)
+	}
+
+	return http.HandlerFunc(fn)
+}
 
 var jwtMiddleware = jwtmiddleware.New(jwtmiddleware.Options{
 	ValidationKeyGetter: func(token *jwt.Token) (interface{}, error) {

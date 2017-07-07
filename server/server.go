@@ -14,6 +14,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"os"
 	"time"
 
 	"github.com/gorilla/mux"
@@ -78,10 +79,19 @@ func Start() {
 	SetServerStatus("server ready", true)
 	apirtr := mux.NewRouter()
 	apirtr.Handle("/settings", GetSettings).Methods("GET")
-	apirtr.Handle("/settings", PostSettings).Methods("POST")
-	apirtr.Handle("/status", GetStatus).Methods("GET")
-	apirtr.Handle("/user/login", UserLogin).Methods("POST")
-	apirtr.Handle("/url/add", jwtMiddleware.Handler(PostTranslation)).Methods("POST")
+	dir, _ := os.Executable()
+	fmt.Println(dir)
+
+	apirtr.PathPrefix("/static").Handler(http.FileServer(http.Dir("client/dist")))
+
+	// Catch-all: Serve our JavaScript application's entry-point (index.html).
+	apirtr.PathPrefix("/").HandlerFunc(IndexHandler("client/dist/index.html"))
+
+	apirtr.Handle("/api/settings", PostSettings).Methods("POST")
+	apirtr.Handle("/api/status", GetStatus).Methods("GET")
+	apirtr.Handle("/api/user/login", UserLogin).Methods("POST")
+	apirtr.Handle("/api/url/add", jwtMiddleware.Handler(PostTranslation)).Methods("POST")
+	// apirtr.Handle("/{target}", GetRedirect).Methods("GET")
 	log.Println("API listening on", "0.0.0.0:8001")
 
 	Config.apiServer = http.Server{

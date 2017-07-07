@@ -13,8 +13,8 @@ const router = new Router({
     {
       path: '/',
       name: '/',
-      component: Home,
-      beforeEnter: requireAuthenticated
+      component: Home // ,
+      // beforeEnter: requireAuthenticated
     },
 
     {
@@ -49,11 +49,11 @@ function requireAuthenticated (to, from, next) {
 }
 
 function isReady (to, from, next) {
-  statusRedirect(to, from, next, true, 'server ready', '/config')
+  statusRedirect(to, from, next, true, 'server ready', '/api/config')
 }
 
 function needConfig (to, from, next) {
-  statusRedirect(to, from, next, false, 'config missing', '/login')
+  statusRedirect(to, from, next, false, 'config missing', '/api/login')
 }
 
 function statusRedirect (to, from, next, resBool, resComment, ifNotRedirectTo) {
