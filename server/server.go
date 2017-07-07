@@ -85,7 +85,10 @@ func Start() {
 	apirtr.PathPrefix("/static").Handler(http.FileServer(http.Dir("client/dist")))
 
 	// Catch-all: Serve our JavaScript application's entry-point (index.html).
-	apirtr.PathPrefix("/").HandlerFunc(IndexHandler("client/dist/index.html"))
+	// apirtr.PathPrefix("/").HandlerFunc(IndexHandler("client/dist/index.html"))
+
+	//apirtr.Handle("/static", http.Handler(http.FileServer(http.Dir("client/dist"))))
+	apirtr.Handle("/", http.HandlerFunc(IndexHandler("client/dist/index.html")))
 
 	apirtr.Handle("/api/settings", PostSettings).Methods("POST")
 	apirtr.Handle("/api/status", GetStatus).Methods("GET")
