@@ -64,8 +64,13 @@ func createConfig() {
 	SetServerStatus("config missing", false)
 
 	apirtr := mux.NewRouter()
-	apirtr.Handle("/status", GetStatus).Methods("GET")
-	apirtr.Handle("/config", PostConfig).Methods("POST")
+	// serve up the static
+	apirtr.PathPrefix("/static").Handler(http.FileServer(http.Dir("client/dist")))
+	apirtr.Handle("/ui", http.HandlerFunc(IndexHandler("client/dist/index.html")))
+	apirtr.Handle("/ui/{page}", http.HandlerFunc(IndexHandler("client/dist/index.html")))
+
+	apirtr.Handle("/api/status", GetStatus).Methods("GET")
+	apirtr.Handle("/api/config", PostConfig).Methods("POST")
 
 	srv := http.Server{Addr: ":8001", Handler: apirtr}
 

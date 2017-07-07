@@ -54,7 +54,7 @@ export default {
         username: this.credentials.username,
         password: this.credentials.password
       }
-      var data = Promise.resolve(auth.Login(this, creds, '/home'))
+      var data = Promise.resolve(auth.Login(this, creds, '/ui/home'))
       var ctx = this
       data.then(function (result) {
         if (result) {

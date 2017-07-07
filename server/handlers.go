@@ -22,6 +22,7 @@ var GetRedirect = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) 
 	y, err := Config.GET(db, j)
 	if err != nil {
 		writeStatus(w, err.Error(), false, 404)
+		http.Redirect(w, r, "/ui", http.StatusMovedPermanently)
 		return
 	}
 
@@ -154,7 +155,6 @@ var GetSettings = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) 
 var PostSettings = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 	// TODO
 })
-
 
 func IndexHandler(entrypoint string) func(w http.ResponseWriter, r *http.Request) {
 	fn := func(w http.ResponseWriter, r *http.Request) {

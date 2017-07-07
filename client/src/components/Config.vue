@@ -101,7 +101,7 @@ export default {
     SendConfig: function (ctx) {
       return ctx.$http.post('/api/config', this.config).then(response => {
         console.log('config accepted')
-        router.push('/login')
+        router.push('/ui/login')
       }, response => {
         return response.body
       }).catch(e => {

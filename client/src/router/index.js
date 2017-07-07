@@ -18,19 +18,19 @@ const router = new Router({
     },
 
     {
-      path: '/home',
+      path: '/ui/home',
       name: 'home',
       component: Home,
       beforeEnter: requireAuthenticated
     },
     {
-      path: '/login',
+      path: '/ui/login',
       name: 'login',
       component: Login,
       beforeEnter: isReady
     },
     {
-      path: '/config',
+      path: '/ui/config',
       name: 'config',
       component: Config,
       beforeEnter: needConfig
@@ -44,7 +44,7 @@ function requireAuthenticated (to, from, next) {
   if (auth.isAuthenticated()) {
     next()
   } else {
-    router.replace('/login')
+    router.replace('/ui/login')
   }
 }
 
