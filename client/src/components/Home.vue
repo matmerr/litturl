@@ -7,37 +7,27 @@
           <div class="md-title">
             Home
           </div>
-          <div class="md-subhead">
-            matmerr
-          </div>
         </md-card-header>
         <md-card-content>
           <md-input-container>
             <label>Long URL</label>
             <md-input v-model="urlform"></md-input>
           </md-input-container>
-
-          <!--<md-button class="md-raised md-primary" @click.native="clearTable()">Clear Table</md-button>-->
-          <md-button class="md-raised md-primary" @click.native="postURL()">Shorten</md-button>
           <md-switch v-model="showCustom" name="showCustom" class="md-primary">Use Custom Short URL</md-switch>          
-            
             <md-layout v-if="showCustom">
-              <md-layout md-flex="50">
+              <md-layout md-flex="100">
                 <md-input-container >
-                  <label>Custom URL</label>
+                  <label>Custom URL Mapping</label>
                   <md-input v-model="custom"></md-input>
                 </md-input-container>
-                  Example: {{tinyaddress}}{{custom}}   
+                  Result: {{tinyaddress}}{{custom}}   
                 </md-layout>
-
-              </md-layout md-flex="50">
- 
-   
+              </md-layout>
               <md-layout>
-
             </md-layout>
-
-
+            <md-layout md-gutter>
+              <md-button class="md-raised md-primary" @click.native="postURL()">Shorten</md-button>
+            </md-layout>
         </md-card-content>
         </md-card>
     </md-layout>
@@ -83,7 +73,7 @@ export default {
   methods: {
     postURL: function () {
       var ctx = this
-      var data = Promise.resolve(this.$parent.postJson(JSON.stringify({ url: this.urlform }), API_ADDURL))
+      var data = Promise.resolve(this.$parent.postJson(JSON.stringify({ url: this.urlform, custom: this.custom }), API_ADDURL))
       data.then(result => {
         if (result) {
           ctx.urlList.push({newUrl: result.comment, success: result.success})

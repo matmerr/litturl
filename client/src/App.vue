@@ -1,13 +1,22 @@
 <template>
 
     <div class="container">
-       <md-sidenav class="main-sidebar md-left md-fixed" md-swipeable ref="main-sidebar">
+
+      <md-whiteframe v-if="checkAuth()" md-tag="md-toolbar" md-elevation="1" class="main-header">
+        <md-button class="md-icon-button nav-trigger" @click.native="toggleSidenav">
+          <md-icon>menu</md-icon>
+        </md-button>
+      <h2 class="md-title" style="flex: 1">littURL</h2>
+      <md-button class="md-raised md-warn" @click.native="Logout()">Logout</md-button>
+      </md-whiteframe>
+      
+      <slot></slot>
+       <md-sidenav v-if="checkAuth()" class="main-sidebar md-left md-fixed" md-swipeable ref="main-sidebar">
           <md-toolbar md-theme="white">
             <router-link exact to="/ui/home">
               <img :src="logo" alt="Vue">
             </router-link>
         </md-toolbar>
-
         <div class="main-sidebar-links">
           <md-list class="md-dense">
           <md-list-item>
@@ -19,16 +28,12 @@
             </md-list-item>
 
             <md-list-item>
-              <span>Themes</span>
+              <span>Under Construction</span>
 
               <md-list-expand>
                 <md-list>
                   <md-list-item class="md-inset">
-                    <router-link exact to="/themes/configuration">Configuration</router-link>
-                  </md-list-item>
-
-                  <md-list-item class="md-inset">
-                    <router-link exact to="/themes/dynamic-themes">Dynamic Theme</router-link>
+                    <router-link to="/ui/home">Statistics</router-link>
                   </md-list-item>
                 </md-list>
               </md-list-expand>
@@ -93,23 +98,12 @@ export default {
         return e
       })
     },
-    GetSettings (ctx) {
-      var data = Promise.resolve(this.$http.get('/api/settings', {
-        headers: auth.getAuthHeader()
-      }).then(response => {
-        return response
-      }).catch(e => {
-        return e
-      }))
-      data.then(res => {
-        if (res) {
-          ctx.settings = res.body
-          localStorage.setItem('tinyaddress', res.body.tinyaddress)
-        }
-      })
-    },
+
     checkAuth () {
       return auth.isAuthenticated()
+    },
+    Logout () {
+      auth.Logout()
     }
   }
 
@@ -117,6 +111,37 @@ export default {
 </script>
 
 <style lang="scss">
+
+  .page-content {
+    min-height: 100%;
+    max-height: 100%;
+    flex: 1;
+    display: flex;
+    flex-flow: column
+  }
+
+  
+  .main-header {
+    z-index: 2;
+    color: #fff !important;
+  }
+  .nav-trigger {
+    @media (min-width: 1281px) {
+      display: none;
+    }
+  }
+  .md-title {
+    flex: 1;
+    @media (min-width: 1281px) {
+      margin-left: 8px;
+    }
+  }
+  .github {
+    @media (max-width: 480px) {
+      display: none;
+    }
+  }
+
   @import 'assets/stylesheets/variables.scss';
 
   $sizebar-size: 280px;

@@ -1,6 +1,5 @@
 <template>
   <div id="settings">
-  
     <md-card>
       <md-card-header>
         <div class="md-title">

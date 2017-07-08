@@ -21,8 +21,7 @@ var GetRedirect = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) 
 	log.Println("REDIRECT: key to use", j)
 	y, err := Config.GET(db, j)
 	if err != nil {
-		writeStatus(w, err.Error(), false, 404)
-		// http.Redirect(w, r, "/ui", http.StatusMovedPermanently)
+		http.Redirect(w, r, "/ui", http.StatusMovedPermanently)
 		return
 	}
 
@@ -104,9 +103,12 @@ var PostTranslation = http.HandlerFunc(func(w http.ResponseWriter, r *http.Reque
 
 	uTranslation := MakeURLTranslation(u.URL)
 
+	fmt.Println(u)
+
 	// if we have a custom URL specified, we use that instead
 	if len(u.Custom) > 0 {
 		uTranslation.Wordkey = u.Custom
+		uTranslation.NewURL = Config.TinyAddress + u.Custom
 	}
 
 	log.Println("POST: struct generated", uTranslation)
@@ -175,6 +177,7 @@ var PostSettings = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request)
 		fmt.Println(settmp)
 		Config.TinyAddress = settmp.TinyAddress
 		writeStatus(w, "successfully updated config", true, 200)
+		saveConfig()
 	}
 })
 

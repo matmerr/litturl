@@ -59,6 +59,7 @@ export default {
     localStorage.removeItem('id_token')
     localStorage.removeItem('access_token')
     this.user.authenticated = false
+    router.push("/ui/login")
   }
 
 }

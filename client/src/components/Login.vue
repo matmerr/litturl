@@ -4,7 +4,10 @@
     <md-card>
       <md-card-header>
         <div class="md-title">
-          login
+          littURL
+        </div>
+        <div class="md-subhead">
+          "The Little URL Shortener"
         </div>
       </md-card-header>
       <md-card-content>
@@ -69,8 +72,9 @@ export default {
 
 <style>
 #login {
-  margin: auto;
+  width: 50%;
+  margin: 0 auto;
   margin-top: 60px;
-  max-width: 450px;
+  max-width: 500px;
 }
 </style>
