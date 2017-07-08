@@ -114,6 +114,7 @@ var PostConfig = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 	type baseConfig struct {
 		Username        string `json:"username"`
 		Password        string `json:"password"`
+		Group           string `json:"group"`
 		TinyAddress     string `json:"tinyaddress"`
 		DatabaseType    string `json:"db_type"`
 		DatabaseAddress string `json:"db_address"`
@@ -150,7 +151,7 @@ var PostConfig = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 
 		// at this point the connection to the db has been established,
 		// let's create the supplied user
-		db.NewUser(init.Username, init.Password)
+		db.NewUser(init.Username, init.Password, init.Group)
 
 		writeStatus(w, "successfully loaded config", true, 200)
 		stopserver <- true

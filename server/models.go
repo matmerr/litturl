@@ -6,9 +6,9 @@ import (
 )
 
 type user struct {
-	Admin        bool   `json:"admin"`
 	Username     string `json:"username"`
 	PasswordHash string `json:"password"`
+	Group        string `json:"group"`
 }
 
 type status struct {

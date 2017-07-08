@@ -47,22 +47,19 @@ export default {
     return {
       credentials: {
         username: '',
-        password: ''
+        password: '',
+        group: 'admin'
       }
     }
   },
   methods: {
     Login () {
-      var creds = {
-        username: this.credentials.username,
-        password: this.credentials.password
-      }
-      var data = Promise.resolve(auth.Login(this, creds, '/ui/home'))
+      var data = Promise.resolve(auth.Login(this, this.credentials, '/ui/home'))
       var ctx = this
       data.then(function (result) {
         if (result) {
           console.log(result)
-          ctx.$parent.errorSnackBar(result)
+          ctx.$parent.errorSnackBar(result.comment)
         }
       })
     }

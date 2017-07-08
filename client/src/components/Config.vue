@@ -79,6 +79,7 @@ export default {
       config: {
         username: '',
         password: '',
+        group: 'admin',
         tinyaddress: '',
         db_type: 'Redis',
         db_address: 'localhost',

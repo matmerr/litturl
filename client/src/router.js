@@ -13,8 +13,8 @@ import Config from '@/components/Config'
 // set consts for API paths
 const ROOT_API = '/'
 const STATUS_API = ROOT_API + 'api/status'
-const CONFIG_API = ROOT_API + 'api/config'
-const LOGIN_API = ROOT_API + 'api/user/login'
+const CONFIG_UI = ROOT_API + 'ui/config'
+const LOGIN_UI = ROOT_API + 'ui/login'
 
 const main = [
   {
@@ -65,11 +65,11 @@ function requireAuthenticated (to, from, next) {
 }
 
 function isReady (to, from, next) {
-  statusRedirect(to, from, next, true, 'server ready', CONFIG_API)
+  statusRedirect(to, from, next, true, 'server ready', CONFIG_UI)
 }
 
 function needConfig (to, from, next) {
-  statusRedirect(to, from, next, false, 'config missing', LOGIN_API)
+  statusRedirect(to, from, next, false, 'config missing', LOGIN_UI)
 }
 
 function statusRedirect (to, from, next, resBool, resComment, ifNotRedirectTo) {

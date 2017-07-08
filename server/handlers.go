@@ -57,6 +57,14 @@ var UserLogin = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 	log.Println("POST: User login: ", u)
 	if err != nil {
 		log.Println(err)
+		return
+	}
+
+	// check if the user is legit
+	isUser, err := db.IsUser(u)
+	if err != nil && !isUser {
+		writeStatus(w, error.Error(err), false, 501)
+		return
 	}
 
 	/* Create the token */
@@ -67,14 +75,13 @@ var UserLogin = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 
 	/* Set token claims */
 	claims["admin"] = true
-	claims["name"] = "mmerrick"
-	claims["exp"] = time.Now().Add(time.Hour * 24).Unix()
+	claims["name"] = "admin"
+	claims["exp"] = time.Now().Add(time.Hour * 8760).Unix()
 
 	signingkey := []byte(Config.SigningKey)
 	/* Sign the token with our secret */
 	tokenString, _ := token.SignedString(signingkey)
 
-	fmt.Println(tokenString)
 	/* Finally, write the token to the browser window */
 
 	type login struct {
@@ -194,3 +201,10 @@ var jwtMiddleware = jwtmiddleware.New(jwtmiddleware.Options{
 	},
 	SigningMethod: jwt.SigningMethodHS256,
 })
+
+func userDiff(user1 user, user2 user) bool {
+	if strings.Compare(user1.Username, user2.Username) == 0 && strings.Compare(user1.PasswordHash, user2.PasswordHash) == 0 && strings.Compare(user1.Group, user2.Group) == 0 {
+		return true
+	}
+	return false
+}

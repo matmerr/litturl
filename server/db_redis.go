@@ -2,6 +2,7 @@ package server
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"strconv"
 	"strings"
@@ -32,7 +33,7 @@ func NewRedisdb(host string, port int) (*redisdb, error) {
 	red.user_client = redis.NewClient(&redis.Options{
 		Addr:     host + ":" + strconv.Itoa(port),
 		Password: "", // no password
-		DB:       1,  // use user DB
+		DB:       0,  // use user DB
 	})
 
 	if err != nil {
@@ -59,22 +60,33 @@ func (r redisdb) Get(key string) (URLTranslation, error) {
 	if err != nil {
 		return u, err
 	}
-	result := strings.NewReader(jsonresult)
-	json.NewDecoder(result).Decode(&u)
+	resultReader := strings.NewReader(jsonresult)
+	json.NewDecoder(resultReader).Decode(&u)
 	return u, nil
 }
 
-func (r redisdb) NewUser(username, password string) error {
-	u := user{false, username, password}
+func (r redisdb) NewUser(username, password, group string) error {
+	u := user{username, password, group}
 	bs, _ := json.Marshal(u)
-	err := r.user_client.Set(u.Username, bs, 1).Err()
+	err := r.user_client.Set(u.Username, bs, 0).Err()
+	fmt.Println(u)
 	return err
 }
 
 func (r redisdb) IsUser(testuser user) (bool, error) {
-	_, err := r.user_client.Get(testuser.Username).Result()
+	jsonresult, err := r.user_client.Get(testuser.Username).Result()
 	if err != nil {
+		if err == redis.Nil {
+			return false, errors.New("username or password incorrect")
+		}
 		return false, err
 	}
-	return true, nil
+	var storeduser user
+	resultReader := strings.NewReader(jsonresult)
+	json.NewDecoder(resultReader).Decode(&storeduser)
+
+	if userDiff(storeduser, testuser) {
+		return true, nil
+	}
+	return false, errors.New("username or password incorrect")
 }
