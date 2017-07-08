@@ -1,53 +1,57 @@
+// Third external
+import auth from './auth'
+import VueRouter from 'vue-router';
 import Vue from 'vue'
-import Router from 'vue-router'
+Vue.use(VueRouter)
+
+// import components
 import Login from '@/components/Login'
 import Settings from '@/components/Settings'
 import Home from '@/components/Home'
 import Config from '@/components/Config'
-import auth from '../auth'
 
+// set consts for API paths
 const ROOT_API = '/'
 const STATUS_API = ROOT_API + 'api/status'
 const CONFIG_API = ROOT_API + 'api/config'
 const LOGIN_API = ROOT_API + 'api/user/login'
 
-Vue.use(Router)
+const main = [
+  {
+    path: '/ui',
+    name: '/ui',
+    component: Home,
+    beforeEnter: requireAuthenticated
+  },
+  {
+    path: '/ui/home',
+    name: 'home',
+    component: Home,
+    beforeEnter: requireAuthenticated
+  },
+  {
+    path: '/ui/settings',
+    name: 'settings',
+    component: Settings,
+    beforeEnter: requireAuthenticated
+  },
+  {
+    path: '/ui/login',
+    name: 'login',
+    component: Login,
+    beforeEnter: isReady
+  },
+  {
+    path: '/ui/config',
+    name: 'config',
+    component: Config,
+    beforeEnter: needConfig
+  }
+]
 
-const router = new Router({
+let router = new VueRouter({
   mode: 'history',
-  routes: [
-    {
-      path: '/ui',
-      name: '/ui',
-      component: Home,
-      beforeEnter: requireAuthenticated
-    },
-
-    {
-      path: '/ui/home',
-      name: 'home',
-      component: Home,
-      beforeEnter: requireAuthenticated
-    },
-    {
-      path: '/ui/settings',
-      name: 'settings',
-      component: Settings,
-      beforeEnter: requireAuthenticated
-    },
-    {
-      path: '/ui/login',
-      name: 'login',
-      component: Login,
-      beforeEnter: isReady
-    },
-    {
-      path: '/ui/config',
-      name: 'config',
-      component: Config,
-      beforeEnter: needConfig
-    }
-  ]
+  routes: main
 })
 
 export default router
