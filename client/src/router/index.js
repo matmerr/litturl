@@ -19,8 +19,8 @@ const router = new Router({
     {
       path: '/ui',
       name: '/ui',
-      component: Home // ,
-      // beforeEnter: requireAuthenticated
+      component: Home,
+      beforeEnter: requireAuthenticated
     },
 
     {
@@ -32,8 +32,8 @@ const router = new Router({
     {
       path: '/ui/settings',
       name: 'settings',
-      component: Settings // ,
-      // beforeEnter: requireAuthenticated
+      component: Settings,
+      beforeEnter: requireAuthenticated
     },
     {
       path: '/ui/login',

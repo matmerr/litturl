@@ -146,6 +146,7 @@ var GetSettings = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) 
 	settmp.WordsSHA256 = Config.WordsSHA256
 	settmp.TinyAddress = Config.TinyAddress
 	settmp.DatabaseType = Config.DatabaseType
+	settmp.DatabaseAddress = Config.DatabaseAddress
 	settmp.DatabasePort = Config.DatabasePort
 	fmt.Println(settmp)
 

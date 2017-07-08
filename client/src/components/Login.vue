@@ -49,7 +49,7 @@ export default {
     }
   },
   methods: {
-    Login: function () {
+    Login () {
       var creds = {
         username: this.credentials.username,
         password: this.credentials.password

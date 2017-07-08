@@ -5,7 +5,7 @@
         <md-icon>menu</md-icon>
       </md-button>
       <h2 class="md-title" style="flex: 1">littleURL</h2>
-      <md-button class="md-raised md-warn">{{loginStatus}}</md-button>
+      <md-button class="md-raised md-warn" @click.native="auth.logout()">Logout</md-button>
     </md-toolbar>
   
     <md-sidenav class="md-left md-swipeable" ref="leftSidenav">
@@ -23,7 +23,8 @@
             </md-list-item>
             <md-list-item>
               <span>
-              <router-link exact to="/ui/settings">Settings</router-link>
+              <router-link event click =closeLeftSidenav() exact to="/ui/settings">Settings</router-link>
+
               </span>
             </md-list-item>
   
@@ -53,7 +54,6 @@ export default {
       user: auth.user,
       err: '',
       contacts: [],
-      loginStatus: 'Logout',
       urlform: ''
     }
   },

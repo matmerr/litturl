@@ -74,14 +74,7 @@ export default {
       var data = Promise.resolve(this.$parent.postJson(JSON.stringify({ url: this.urlform }), API_ADDURL))
       data.then(result => {
         if (result) {
-          if (result.status === 200) {
-            ctx.urlList.push({newUrl: result.body.comment, success: result.body.success})
-          } else if (result.status === 401) {
-            ctx.$parent.errorSnackBar(result.status + ' ' + result.body.statusText)
-            ctx.$parent.redirect('/login')
-          } else {
-            ctx.$parent.errorSnackBar(result.status + ' ' + result.body.statusText)
-          }
+          ctx.urlList.push({newUrl: result.comment, success: result.success})
         }
       })
     }

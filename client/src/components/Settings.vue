@@ -11,14 +11,30 @@
         <md-layout md-gutter>
           <md-input-container>
             <md-icon class="md-primary">perm_identity</md-icon>
-            <label>Username</label>
+            <label>Words Hash</label>
+            <md-input disabled v-model="settings.wordsSHA256"></md-input>
+          </md-input-container>
+          <md-input-container>
+            <md-icon class="md-primary">perm_identity</md-icon>
+            <label>Database Type</label>
+            <md-input disabled v-model="settings.db_type"></md-input>
+          </md-input-container> 
+          <md-input-container>
+            <md-icon class="md-primary">perm_identity</md-icon>
+            <label>{{settings.db_type}} Address</label>
+            <md-input disabled v-model="settings.db_address"></md-input>
+          </md-input-container>
+          <md-input-container>
+            <md-icon class="md-primary">perm_identity</md-icon>
+            <label>{{settings.db_type}} Port</label>
+            <md-input disabled v-model="settings.db_port"></md-input>
+          </md-input-container>            
+          <md-input-container>
+            <md-icon class="md-primary">perm_identity</md-icon>
+            <label>Short URL Hostname</label>
             <md-input required v-model="settings.tinyaddress"></md-input>
           </md-input-container>
-          <md-input-container md-has-password>
-            <md-icon class="md-primary">lock</md-icon>
-            <label>Password</label>
-            <md-input required type="password" v-model="settings.tinyaddress"></md-input>
-          </md-input-container>
+
           <md-layout md-align="end">
             <span class="md-caption">* indicates required</span>
           </md-layout>
@@ -57,7 +73,7 @@ export default {
       var ctx = this
       data.then(function (result) {
         if (result) {
-          ctx.$parent.errorSnackBar(result)
+          ctx.$parent.errorSnackBar(result.comment)
         }
       })
     },
@@ -77,7 +93,7 @@ export default {
       })
     }
   },
-  beforeMount () {
+  beforeMount: function () {
     this.GetSettings()
   }
 }
@@ -87,6 +103,6 @@ export default {
 #settings {
   margin: auto;
   margin-top: 60px;
-  max-width: 450px;
+  max-width: 900px;
 }
 </style>
