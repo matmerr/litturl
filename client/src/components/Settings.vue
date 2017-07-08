@@ -74,35 +74,23 @@ export default {
       data.then(function (result) {
         if (result) {
           ctx.$parent.errorSnackBar(result.comment)
+          localStorage.setItem('tinyaddress', ctx.settings.tinyaddress)
         }
-      })
-    },
-    GetSettings: function () {
-      var ctx = this
-      var data = Promise.resolve(this.$http.get('/api/settings', {
-        headers: auth.getAuthHeader()
-      }).then(response => {
-        return response
       }).catch(e => {
-        return e
-      }))
-      data.then(result => {
-        if (result) {
-          ctx.settings = result.body
-        }
+        console.log(e)
       })
     }
   },
   beforeMount: function () {
-    this.GetSettings()
+    auth.GetSettings(this)
   }
 }
 </script>
 
 <style>
 #settings {
-  margin: auto;
-  margin-top: 60px;
-  max-width: 900px;
+  margin-top: 30px;
+  margin-left: 30px;
+  margin-right: 30px;
 }
 </style>

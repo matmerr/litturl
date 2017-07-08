@@ -1,11 +1,11 @@
 <template>
   <div id="home">
-    <md-layout md-gutter>
+    <md-layout md-gutter md-column>
       <md-layout md-column>
       <md-card>
         <md-card-header>
           <div class="md-title">
-            littleURL
+            Home
           </div>
           <div class="md-subhead">
             matmerr
@@ -16,21 +16,32 @@
             <label>Long URL</label>
             <md-input v-model="urlform"></md-input>
           </md-input-container>
-          
-          <br>
-          <md-switch  v-model="showCustom" id="my-test5" name="showCustom" class="md-primary">Use Custom Short URL</md-switch>          
-            <md-input-container v-if="showCustom">
-              <label>Custom URL</label>
-            <md-input v-model="custom"></md-input>
-          </md-input-container>
-
-          <br>
 
           <!--<md-button class="md-raised md-primary" @click.native="clearTable()">Clear Table</md-button>-->
           <md-button class="md-raised md-primary" @click.native="postURL()">Shorten</md-button>
+          <md-switch v-model="showCustom" name="showCustom" class="md-primary">Use Custom Short URL</md-switch>          
+            
+            <md-layout v-if="showCustom">
+              <md-layout md-flex="50">
+                <md-input-container >
+                  <label>Custom URL</label>
+                  <md-input v-model="custom"></md-input>
+                </md-input-container>
+                  Example: {{tinyaddress}}{{custom}}   
+                </md-layout>
+
+              </md-layout md-flex="50">
+ 
+   
+              <md-layout>
+
+            </md-layout>
+
+
         </md-card-content>
         </md-card>
     </md-layout>
+    <br>
     <md-layout md-column>
       <md-card>
         <md-table>
@@ -65,7 +76,8 @@ export default {
       jsondata: '',
       urlform: '',
       showCustom: false,
-      custom: ''
+      custom: '',
+      tinyaddress: localStorage.getItem('tinyaddress')
     }
   },
   methods: {

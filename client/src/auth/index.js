@@ -8,11 +8,12 @@ export default {
     authenticated: false
   },
 
-  Login (context, creds, redirect) {
-    return context.$http.post(LOGIN_API, creds).then(response => {
+  Login (ctx, creds, redirect) {
+    return ctx.$http.post(LOGIN_API, creds).then(response => {
       localStorage.setItem('id_token', response.body.id_token)
       localStorage.setItem('access_token', response.body.access_token)
       this.user.authenticated = true
+      this.GetSettings(ctx)
 
       if (redirect) {
         router.push(redirect)
@@ -36,6 +37,22 @@ export default {
     return {
       'Authorization': 'Bearer ' + localStorage.getItem('access_token')
     }
+  },
+
+  GetSettings (ctx) {
+    var data = Promise.resolve(ctx.$http.get('/api/settings', {
+      headers: this.getAuthHeader()
+    }).then(response => {
+      return response
+    }).catch(e => {
+      return e
+    }))
+    data.then(res => {
+      if (res) {
+        ctx.settings = res.body
+        localStorage.setItem('tinyaddress', res.body.tinyaddress)
+      }
+    })
   },
 
   Logout () {

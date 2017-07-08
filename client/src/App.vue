@@ -3,7 +3,7 @@
     <div class="container">
        <md-sidenav class="main-sidebar md-left md-fixed" md-swipeable ref="main-sidebar">
           <md-toolbar md-theme="white">
-            <router-link exact to="/ui">
+            <router-link exact to="/ui/home">
               <img :src="logo" alt="Vue">
             </router-link>
         </md-toolbar>
@@ -36,9 +36,13 @@
           </md-list>
         </div>
       </md-sidenav>
-          <transition name="md-router" appear>
-      <router-view></router-view>
-    </transition>
+      <transition name="md-router" appear>
+        <router-view></router-view>
+      </transition>
+      <md-snackbar :md-position="vertical + ' ' + horizontal" ref="snackbar" :md-duration="duration">
+        <span>{{err}}</span>
+        <md-button class="md-accent" md-theme="light-blue" @click.native="$refs.snackbar.close()">OK</md-button>
+      </md-snackbar>
     </div>
 </template>
 
@@ -87,6 +91,21 @@ export default {
         return response.body
       }).catch(e => {
         return e
+      })
+    },
+    GetSettings (ctx) {
+      var data = Promise.resolve(this.$http.get('/api/settings', {
+        headers: auth.getAuthHeader()
+      }).then(response => {
+        return response
+      }).catch(e => {
+        return e
+      }))
+      data.then(res => {
+        if (res) {
+          ctx.settings = res.body
+          localStorage.setItem('tinyaddress', res.body.tinyaddress)
+        }
       })
     },
     checkAuth () {
