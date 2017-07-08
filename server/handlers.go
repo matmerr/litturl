@@ -22,7 +22,7 @@ var GetRedirect = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) 
 	y, err := Config.GET(db, j)
 	if err != nil {
 		writeStatus(w, err.Error(), false, 404)
-		http.Redirect(w, r, "/ui", http.StatusMovedPermanently)
+		// http.Redirect(w, r, "/ui", http.StatusMovedPermanently)
 		return
 	}
 
@@ -147,20 +147,40 @@ var GetSettings = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) 
 	settmp.TinyAddress = Config.TinyAddress
 	settmp.DatabaseType = Config.DatabaseType
 	settmp.DatabasePort = Config.DatabasePort
+	fmt.Println(settmp)
 
 	j, _ := json.Marshal(settmp)
 	fmt.Fprintf(w, "%s", j)
 })
 
 var PostSettings = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-	// TODO
+
+	// Normally we could just serialize the Config, but it contains net/http which has a mutex lock
+	type settings struct {
+		WordsSHA256     string `json:"wordsSHA256"`
+		TinyAddress     string `json:"tinyaddress"`
+		DatabaseType    string `json:"db_type"`
+		DatabaseAddress string `json:"db_address"`
+		DatabasePort    int    `json:"db_port"`
+	}
+
+	decoder := json.NewDecoder(r.Body)
+	defer r.Body.Close()
+	var settmp settings
+	err := decoder.Decode(&settmp)
+	if err != nil {
+		writeStatus(w, error.Error(err), false, 500)
+	} else {
+		fmt.Println(settmp)
+		Config.TinyAddress = settmp.TinyAddress
+		writeStatus(w, "successfully updated config", true, 200)
+	}
 })
 
 func IndexHandler(entrypoint string) func(w http.ResponseWriter, r *http.Request) {
 	fn := func(w http.ResponseWriter, r *http.Request) {
 		http.ServeFile(w, r, entrypoint)
 	}
-
 	return http.HandlerFunc(fn)
 }
 

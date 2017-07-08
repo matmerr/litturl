@@ -18,12 +18,12 @@
           <md-list class="md-dense">
             <md-list-item>
               <span>
-              <router-link exact to="/home">Home</router-link>
+              <router-link exact to="/ui/home">Home</router-link>
               </span>
             </md-list-item>
             <md-list-item>
               <span>
-              <router-link exact to="/login">Login</router-link>
+              <router-link exact to="/ui/settings">Settings</router-link>
               </span>
             </md-list-item>
   

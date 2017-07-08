@@ -75,12 +75,12 @@ export default {
       data.then(result => {
         if (result) {
           if (result.status === 200) {
-            ctx.urlList.push({newUrl: result.comment, success: result.success})
+            ctx.urlList.push({newUrl: result.body.comment, success: result.body.success})
           } else if (result.status === 401) {
-            ctx.$parent.errorSnackBar(result.status + ' ' + result.statusText)
+            ctx.$parent.errorSnackBar(result.status + ' ' + result.body.statusText)
             ctx.$parent.redirect('/login')
           } else {
-            ctx.$parent.errorSnackBar(result.status + ' ' + result.statusText)
+            ctx.$parent.errorSnackBar(result.status + ' ' + result.body.statusText)
           }
         }
       })
