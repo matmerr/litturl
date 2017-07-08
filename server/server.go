@@ -58,23 +58,6 @@ func Start() {
 	// create the keygenerator used for
 	Config.keyGenerator, _ = MakeKeyGenerator(3, 4, Config.TinyAddress)
 
-	// setup URL shortener redirect point
-	urlrtr := mux.NewRouter()
-	urlrtr.Handle("/{target}", GetRedirect).Methods("GET")
-
-	Config.urlServer = http.Server{
-		Addr:    Config.bindAddress + ":8000",
-		Handler: urlrtr,
-	}
-
-	// start the URL server in a seperate goroutine
-	go func() {
-		log.Println("URL Redirect listening on", Config.urlServer.Addr)
-		if err := Config.urlServer.ListenAndServe(); err != nil {
-			log.Println(err)
-		}
-	}()
-
 	// setup API shortner redirect
 	SetServerStatus("server ready", true)
 	apirtr := mux.NewRouter()
