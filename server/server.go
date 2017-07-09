@@ -77,6 +77,7 @@ func Start(webFiles string) {
 	apirtr.Handle("/api/user/login", UserLogin).Methods("POST")
 	apirtr.Handle("/api/url/add", jwtMiddleware.Handler(PostTranslation)).Methods("POST")
 	apirtr.Handle("/{target}", GetRedirect).Methods("GET")
+	apirtr.Handle("/", defaultRedirect).Methods("GET")
 	log.Println("API listening on", "0.0.0.0:8001")
 
 	Config.apiServer = http.Server{

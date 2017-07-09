@@ -1,10 +1,7 @@
 version: '3.2'
 services:
   litturl:
-    build: 
-      context: .
-      cache_from:
-        - golang:alpine
+    image: matmerr/litturl:latest
     restart: always
     ports: 
       - "8001:8001"
