@@ -41,8 +41,12 @@ var stopserver chan bool
 
 var db Database
 
+// directory which contains the files for web
+var client_dir string
+
 // Start the server
-func Start() {
+func Start(web_files string) {
+
 	loadConfig()
 
 	// if there is no existing connection to the database
@@ -66,8 +70,8 @@ func Start() {
 	fmt.Println(dir)
 
 	// serve up the static
-	apirtr.PathPrefix("/static").Handler(http.FileServer(http.Dir("client/dist")))
-	apirtr.Handle("/ui", http.HandlerFunc(IndexHandler("client/dist/index.html")))
+	apirtr.PathPrefix("/static").Handler(http.FileServer(http.Dir(web_files)))
+	apirtr.Handle("/ui", http.HandlerFunc(IndexHandler(web_files+"index.html")))
 	apirtr.Handle("/ui/{page}", http.HandlerFunc(IndexHandler("client/dist/index.html")))
 
 	apirtr.Handle("/api/settings", PostSettings).Methods("POST")

@@ -1,6 +1,7 @@
 package main
 
 import (
+	"os"
 	"sync"
 
 	"github.com/matmerr/litturl/server"
@@ -8,9 +9,9 @@ import (
 
 func main() {
 
-	//go func() {
-	server.Start()
-	//}()
+	clientdir := os.Args[1]
+
+	server.Start(clientdir)
 
 	var wg sync.WaitGroup
 	wg.Add(1)
