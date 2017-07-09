@@ -45,9 +45,9 @@ var db Database
 var client_dir string
 
 // Start the server
-func Start(web_files string) {
+func Start(webFiles string) {
 
-	loadConfig()
+	loadConfig(webFiles)
 
 	// if there is no existing connection to the database
 	// reloading config from cold start, set it up
@@ -70,9 +70,9 @@ func Start(web_files string) {
 	fmt.Println(dir)
 
 	// serve up the static
-	apirtr.PathPrefix("/static").Handler(http.FileServer(http.Dir(web_files)))
-	apirtr.Handle("/ui", http.HandlerFunc(IndexHandler(web_files+"index.html")))
-	apirtr.Handle("/ui/{page}", http.HandlerFunc(IndexHandler("client/dist/index.html")))
+	apirtr.PathPrefix("/static").Handler(http.FileServer(http.Dir(webFiles)))
+	apirtr.Handle("/ui", http.HandlerFunc(IndexHandler(webFiles+"index.html")))
+	apirtr.Handle("/ui/{page}", http.HandlerFunc(IndexHandler(webFiles+"index.html")))
 
 	apirtr.Handle("/api/settings", PostSettings).Methods("POST")
 	apirtr.Handle("/api/settings", GetSettings).Methods("GET")

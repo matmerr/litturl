@@ -23,17 +23,17 @@ import (
 	"github.com/gorilla/mux"
 )
 
-func loadConfig() {
+func loadConfig(webFiles string) {
 	bytes, err := ioutil.ReadFile("conf/server-config.json")
 
 	// error reading config, open api for generation
 	if err != nil {
-		createConfig()
+		createConfig(webFiles)
 	} else {
 		// file loaded, error marshalling config, open api for generation
 		err = json.Unmarshal(bytes, &Config)
 		if err != nil {
-			createConfig()
+			createConfig(webFiles)
 		}
 		if strings.Compare(Config.WordsSHA256, HashWords("conf/nounlist.txt")) != 0 {
 			log.Fatal("Word reference file has changed!")
@@ -55,7 +55,7 @@ func saveConfig() {
 
 // sample curl command
 // curl -H "Content-Type: application/json" -X POST -d '{"signingkey":"19","tinyaddress":"http://127.0.0.1/", "bindaddress":"0.0.0.0" }' http://192.168.91.1:8000/config
-func createConfig() {
+func createConfig(webFiles string) {
 	log.Println("no config was found")
 
 	// signal to this channel to stop config server
@@ -65,12 +65,14 @@ func createConfig() {
 
 	apirtr := mux.NewRouter()
 	// serve up the static
-	apirtr.PathPrefix("/static").Handler(http.FileServer(http.Dir("client/dist")))
-	apirtr.Handle("/ui", http.HandlerFunc(IndexHandler("client/dist/index.html")))
-	apirtr.Handle("/ui/{page}", http.HandlerFunc(IndexHandler("client/dist/index.html")))
+	apirtr.PathPrefix("/static").Handler(http.FileServer(http.Dir(webFiles)))
+	apirtr.Handle("/ui", http.HandlerFunc(IndexHandler(webFiles+"index.html")))
+	apirtr.Handle("/ui/{page}", http.HandlerFunc(IndexHandler(webFiles+"index.html")))
 
 	apirtr.Handle("/api/status", GetStatus).Methods("GET")
 	apirtr.Handle("/api/config", PostConfig).Methods("POST")
+	apirtr.Handle("/", defaultRedirect).Methods("GET")
+	apirtr.Handle("{page}", defaultRedirect).Methods("GET")
 
 	srv := http.Server{Addr: ":8001", Handler: apirtr}
 
@@ -108,6 +110,10 @@ func createConfig() {
 	saveConfig()
 
 }
+
+var defaultRedirect = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	http.Redirect(w, r, "/ui", http.StatusMovedPermanently)
+})
 
 //PostConfig converts adds a translation to the store
 var PostConfig = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
