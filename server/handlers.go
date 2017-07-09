@@ -54,7 +54,6 @@ var UserLogin = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
 	var u user
 	err := decoder.Decode(&u)
-	log.Println("POST: User login: ", u)
 	if err != nil {
 		log.Println(err)
 		return
@@ -110,8 +109,6 @@ var PostTranslation = http.HandlerFunc(func(w http.ResponseWriter, r *http.Reque
 
 	uTranslation := MakeURLTranslation(u.URL)
 
-	fmt.Println(u)
-
 	// if we have a custom URL specified, we use that instead
 	if len(u.Custom) > 0 {
 		uTranslation.Wordkey = u.Custom
@@ -157,7 +154,6 @@ var GetSettings = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) 
 	settmp.DatabaseType = Config.DatabaseType
 	settmp.DatabaseAddress = Config.DatabaseAddress
 	settmp.DatabasePort = Config.DatabasePort
-	fmt.Println(settmp)
 
 	j, _ := json.Marshal(settmp)
 	fmt.Fprintf(w, "%s", j)

@@ -3,7 +3,6 @@ package server
 import (
 	"encoding/json"
 	"errors"
-	"fmt"
 	"strconv"
 	"strings"
 
@@ -40,13 +39,12 @@ func NewRedisdb(host string, port int) (*redisdb, error) {
 		log.Println(err)
 		return nil, err
 	}
-	fmt.Println(t)
+	log.Println(t)
 	return &red, nil
 }
 
 //Put adds the URLdata json to the key string in redis
 func (r redisdb) Put(key string, urldata URLTranslation) error {
-	fmt.Println(urldata)
 	bs, _ := json.Marshal(urldata)
 	err := r.url_client.Set(key, bs, 0).Err()
 	return err
@@ -54,10 +52,10 @@ func (r redisdb) Put(key string, urldata URLTranslation) error {
 
 //Get uses the key to return the URL translation
 func (r redisdb) Get(key string) (URLTranslation, error) {
-	fmt.Println("Key to use: ", key)
+
 	jsonresult, err := r.url_client.Get(key).Result()
 	var u URLTranslation
-	fmt.Println(u)
+
 	if err != nil {
 		return u, err
 	}
@@ -76,7 +74,7 @@ func (r redisdb) NewUser(username, password, group string) error {
 		return errors.New("invalid password")
 	}
 	err := r.user_client.Set(u.Username, bs, 0).Err()
-	fmt.Println(u)
+
 	return err
 }
 

@@ -6,7 +6,6 @@ import (
 	"crypto/sha256"
 	"encoding/hex"
 	"encoding/json"
-	"fmt"
 	"io"
 	"io/ioutil"
 	"log"
@@ -44,7 +43,6 @@ func loadConfig(webFiles string) {
 func saveConfig() {
 	bytes, err := json.MarshalIndent(Config, "", "  ")
 	config := "conf/server-config.json"
-	//fmt.Println(Config)
 	err = ioutil.WriteFile(config, bytes, 0644)
 	if err != nil {
 		f, _ := os.Create(config)
@@ -76,7 +74,7 @@ func createConfig(webFiles string) {
 
 	srv := http.Server{Addr: ":8001", Handler: apirtr}
 
-	fmt.Println("opening config api on :8001")
+	log.Println("opening config api on :8001")
 
 	go func() {
 		if err := srv.ListenAndServe(); err != nil {
@@ -132,7 +130,7 @@ var PostConfig = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 	err := decoder.Decode(&init)
 
 	if err != nil {
-		fmt.Println(err)
+		log.Println(err)
 		writeStatus(w, "invalid config", false, 200)
 	} else {
 
@@ -149,7 +147,7 @@ var PostConfig = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if (init.TinyAddress[len(init.TinyAddress)-1]) != '/' {
 			init.TinyAddress = init.TinyAddress + "/"
 		}
-		fmt.Println(init)
+
 		Config.bindAddress = "0.0.0.0"
 		Config.TinyAddress = init.TinyAddress
 		Config.DatabaseType = init.DatabaseType

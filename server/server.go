@@ -67,7 +67,6 @@ func Start(webFiles string) {
 	apirtr := mux.NewRouter()
 	apirtr.Handle("/settings", GetSettings).Methods("GET")
 	dir, _ := os.Executable()
-	fmt.Println(dir)
 
 	// serve up the static
 	apirtr.PathPrefix("/static").Handler(http.FileServer(http.Dir(webFiles)))
