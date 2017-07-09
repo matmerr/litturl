@@ -12,7 +12,7 @@
 
 ```
 # clone the repository
-git clone https://github.com/matmerr/
+git clone https://github.com/matmerr/litturl
 
 # cd to repo
 cd litturl
