@@ -82,7 +82,7 @@ export default {
         group: 'admin',
         tinyaddress: '',
         db_type: 'Redis',
-        db_address: 'localhost',
+        db_address: 'redis',
         db_port: 6379
       }
     }
