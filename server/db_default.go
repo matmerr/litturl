@@ -10,7 +10,7 @@ import (
 type Database interface {
 	Get(string) (URLTranslation, error)
 	Put(string, URLTranslation) error
-	NewUser(string, string) error
+	NewUser(string, string, string) error
 	IsUser(user) (bool, error)
 }
 

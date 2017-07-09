@@ -71,6 +71,7 @@ func Start() {
 	apirtr.Handle("/ui/{page}", http.HandlerFunc(IndexHandler("client/dist/index.html")))
 
 	apirtr.Handle("/api/settings", PostSettings).Methods("POST")
+	apirtr.Handle("/api/settings", GetSettings).Methods("GET")
 	apirtr.Handle("/api/status", GetStatus).Methods("GET")
 	apirtr.Handle("/api/user/login", UserLogin).Methods("POST")
 	apirtr.Handle("/api/url/add", jwtMiddleware.Handler(PostTranslation)).Methods("POST")

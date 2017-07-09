@@ -21,7 +21,6 @@ var GetRedirect = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) 
 	log.Println("REDIRECT: key to use", j)
 	y, err := Config.GET(db, j)
 	if err != nil {
-		writeStatus(w, err.Error(), false, 404)
 		http.Redirect(w, r, "/ui", http.StatusMovedPermanently)
 		return
 	}
@@ -58,6 +57,14 @@ var UserLogin = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 	log.Println("POST: User login: ", u)
 	if err != nil {
 		log.Println(err)
+		return
+	}
+
+	// check if the user is legit
+	isUser, err := db.IsUser(u)
+	if err != nil && !isUser {
+		writeStatus(w, error.Error(err), false, 501)
+		return
 	}
 
 	/* Create the token */
@@ -68,14 +75,13 @@ var UserLogin = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 
 	/* Set token claims */
 	claims["admin"] = true
-	claims["name"] = "mmerrick"
-	claims["exp"] = time.Now().Add(time.Hour * 24).Unix()
+	claims["name"] = "admin"
+	claims["exp"] = time.Now().Add(time.Hour * 8760).Unix()
 
 	signingkey := []byte(Config.SigningKey)
 	/* Sign the token with our secret */
 	tokenString, _ := token.SignedString(signingkey)
 
-	fmt.Println(tokenString)
 	/* Finally, write the token to the browser window */
 
 	type login struct {
@@ -104,9 +110,12 @@ var PostTranslation = http.HandlerFunc(func(w http.ResponseWriter, r *http.Reque
 
 	uTranslation := MakeURLTranslation(u.URL)
 
+	fmt.Println(u)
+
 	// if we have a custom URL specified, we use that instead
 	if len(u.Custom) > 0 {
 		uTranslation.Wordkey = u.Custom
+		uTranslation.NewURL = Config.TinyAddress + u.Custom
 	}
 
 	log.Println("POST: struct generated", uTranslation)
@@ -146,21 +155,43 @@ var GetSettings = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) 
 	settmp.WordsSHA256 = Config.WordsSHA256
 	settmp.TinyAddress = Config.TinyAddress
 	settmp.DatabaseType = Config.DatabaseType
+	settmp.DatabaseAddress = Config.DatabaseAddress
 	settmp.DatabasePort = Config.DatabasePort
+	fmt.Println(settmp)
 
 	j, _ := json.Marshal(settmp)
 	fmt.Fprintf(w, "%s", j)
 })
 
 var PostSettings = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-	// TODO
+
+	// Normally we could just serialize the Config, but it contains net/http which has a mutex lock
+	type settings struct {
+		WordsSHA256     string `json:"wordsSHA256"`
+		TinyAddress     string `json:"tinyaddress"`
+		DatabaseType    string `json:"db_type"`
+		DatabaseAddress string `json:"db_address"`
+		DatabasePort    int    `json:"db_port"`
+	}
+
+	decoder := json.NewDecoder(r.Body)
+	defer r.Body.Close()
+	var settmp settings
+	err := decoder.Decode(&settmp)
+	if err != nil {
+		writeStatus(w, error.Error(err), false, 500)
+	} else {
+		fmt.Println(settmp)
+		Config.TinyAddress = settmp.TinyAddress
+		writeStatus(w, "successfully updated config", true, 200)
+		saveConfig()
+	}
 })
 
 func IndexHandler(entrypoint string) func(w http.ResponseWriter, r *http.Request) {
 	fn := func(w http.ResponseWriter, r *http.Request) {
 		http.ServeFile(w, r, entrypoint)
 	}
-
 	return http.HandlerFunc(fn)
 }
 
@@ -170,3 +201,10 @@ var jwtMiddleware = jwtmiddleware.New(jwtmiddleware.Options{
 	},
 	SigningMethod: jwt.SigningMethodHS256,
 })
+
+func userDiff(user1 user, user2 user) bool {
+	if strings.Compare(user1.Username, user2.Username) == 0 && strings.Compare(user1.PasswordHash, user2.PasswordHash) == 0 && strings.Compare(user1.Group, user2.Group) == 0 {
+		return true
+	}
+	return false
+}

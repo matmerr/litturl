@@ -4,7 +4,10 @@
     <md-card>
       <md-card-header>
         <div class="md-title">
-          login
+          littURL
+        </div>
+        <div class="md-subhead">
+          "The Little URL Shortener"
         </div>
       </md-card-header>
       <md-card-content>
@@ -44,22 +47,19 @@ export default {
     return {
       credentials: {
         username: '',
-        password: ''
+        password: '',
+        group: 'admin'
       }
     }
   },
   methods: {
-    Login: function () {
-      var creds = {
-        username: this.credentials.username,
-        password: this.credentials.password
-      }
-      var data = Promise.resolve(auth.Login(this, creds, '/ui/home'))
+    Login () {
+      var data = Promise.resolve(auth.Login(this, this.credentials, '/ui/home'))
       var ctx = this
       data.then(function (result) {
         if (result) {
           console.log(result)
-          ctx.$parent.errorSnackBar(result)
+          ctx.$parent.errorSnackBar(result.comment)
         }
       })
     }
@@ -69,8 +69,9 @@ export default {
 
 <style>
 #login {
-  margin: auto;
+  width: 50%;
+  margin: 0 auto;
   margin-top: 60px;
-  max-width: 450px;
+  max-width: 500px;
 }
 </style>
