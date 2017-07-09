@@ -1,10 +1,14 @@
 FROM golang:alpine
-RUN apk add --update git nodejs
-RUN go get github.com/matmerr/litturl
-RUN cd $GOPATH/src/github.com/matmerr/litturl && \
+ENV LU_DIR=$GOPATH/src/github.com/matmerr/litturl/
+ADD . $LU_DIR
+RUN cd $LU_DIR && \
+	apk add --update git nodejs && \
+	go get ./... && \
 	go build main.go && \
 	cd client && \
         npm install && \
+	npm rebuild node-sass && \
         npm run build
 EXPOSE 8001
-CMD ["sh", "-c", "litturl ${GOPATH}/src/github.com/matmerr/litturl/client/dist/"]
+WORKDIR $LU_DIR
+CMD ["sh", "-c", "go run main.go client/dist/"]

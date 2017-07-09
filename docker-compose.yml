@@ -1,0 +1,23 @@
+version: '3.2'
+services:
+  litturl:
+    build: 
+      context: .
+      cache_from:
+        - golang:alpine
+    restart: always
+    ports: 
+      - "8001:8001"
+    volumes:
+      - config:/go/src/github.com/matmerr/litturl/conf
+    
+  redis:
+    image: redis:latest
+    restart: always
+    command: redis-server --appendonly yes
+    volumes:
+      - db_storage:/data
+
+volumes:
+  db_storage:
+  config:
