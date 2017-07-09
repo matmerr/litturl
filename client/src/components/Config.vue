@@ -40,7 +40,7 @@
             <md-select required name="db" id="db" v-model="config.db_type">
               <md-option value="Redis">Redis
               </md-option>
-              <md-option value="MongoDB">MongoDB</md-option>
+              <md-option disabled=true value="MongoDB">MongoDB</md-option>
             </md-select>
           </md-input-container>
   
@@ -93,17 +93,19 @@ export default {
       var data = Promise.resolve(this.SendConfig(ctx))
       data.then(function (result) {
         if (result) {
-          console.log(result)
           ctx.$parent.errorSnackBar(result)
         }
       })
     },
     SendConfig: function (ctx) {
       return ctx.$http.post('/api/config', this.config).then(response => {
-        console.log('config accepted')
-        router.push('/ui/login')
+        if (response.body.success === true) {
+          router.push('/ui/login')
+        } else {
+          return response.body.comment
+        }
       }, response => {
-        return response.body
+        return response.body.comment
       }).catch(e => {
         return e.message
       })

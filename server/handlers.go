@@ -181,8 +181,12 @@ var PostSettings = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request)
 	if err != nil {
 		writeStatus(w, error.Error(err), false, 500)
 	} else {
-		fmt.Println(settmp)
-		Config.TinyAddress = settmp.TinyAddress
+
+		if (settmp.TinyAddress[len(settmp.TinyAddress)-1]) != '/' {
+			Config.TinyAddress = settmp.TinyAddress + "/"
+		} else {
+			Config.TinyAddress = settmp.TinyAddress
+		}
 		writeStatus(w, "successfully updated config", true, 200)
 		saveConfig()
 	}

@@ -37,10 +37,11 @@ func NewRedisdb(host string, port int) (*redisdb, error) {
 	})
 
 	if err != nil {
-		log.Fatal(err)
+		log.Println(err)
+		return nil, err
 	}
 	fmt.Println(t)
-	return &red, err
+	return &red, nil
 }
 
 //Put adds the URLdata json to the key string in redis
@@ -68,6 +69,12 @@ func (r redisdb) Get(key string) (URLTranslation, error) {
 func (r redisdb) NewUser(username, password, group string) error {
 	u := user{username, password, group}
 	bs, _ := json.Marshal(u)
+	if len(u.Username) == 0 {
+		return errors.New("invalid username")
+	}
+	if len(u.PasswordHash) == 0 {
+		return errors.New("invalid password")
+	}
 	err := r.user_client.Set(u.Username, bs, 0).Err()
 	fmt.Println(u)
 	return err

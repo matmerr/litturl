@@ -73,6 +73,9 @@ export default {
       data.then(function (result) {
         if (result) {
           ctx.$parent.errorSnackBar(result.comment)
+          if (ctx.settings.tinyaddress.slice(-1) !== '/') {
+            ctx.settings.tinyaddress += '/'
+          }
           localStorage.setItem('tinyaddress', ctx.settings.tinyaddress)
         }
       }).catch(e => {

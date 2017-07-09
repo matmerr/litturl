@@ -130,13 +130,22 @@ var PostConfig = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 	decoder := json.NewDecoder(r.Body)
 	defer r.Body.Close()
 	err := decoder.Decode(&init)
+
 	if err != nil {
-		fmt.Println("THIS ERROR")
 		fmt.Println(err)
 		writeStatus(w, "invalid config", false, 200)
 	} else {
+
+		// lets make sure the user did enter a tiny url
+		if len(init.TinyAddress) < 1 {
+			log.Println(err)
+			writeStatus(w, "no tiny address entered!", false, 200)
+			return
+		}
+
 		// if the tiny address supplied doesn't have a trailing /, add one on
 		// required for returning the url and keys
+
 		if (init.TinyAddress[len(init.TinyAddress)-1]) != '/' {
 			init.TinyAddress = init.TinyAddress + "/"
 		}
@@ -150,14 +159,19 @@ var PostConfig = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		// validate the connection to the database
 		err := ConnectDB()
 		if err != nil {
-			log.Fatal(err)
-			writeStatus(w, err.Error(), true, 200)
+			log.Println(error.Error(err))
+			writeStatus(w, err.Error(), false, 200)
 			return
 		}
 
 		// at this point the connection to the db has been established,
 		// let's create the supplied user
-		db.NewUser(init.Username, init.Password, init.Group)
+		err = db.NewUser(init.Username, init.Password, init.Group)
+		if err != nil {
+			log.Println(error.Error(err))
+			writeStatus(w, err.Error(), false, 200)
+			return
+		}
 
 		writeStatus(w, "successfully loaded config", true, 200)
 		stopserver <- true
