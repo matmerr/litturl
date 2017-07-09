@@ -1,10 +1,10 @@
-FROM golang:latest
-RUN curl -sL https://deb.nodesource.com/setup_6.x | sudo -E bash - && \
-    sudo apt-get install -y nodejs
-RUN mkdir /app && cd /app
+FROM golang:alpine
+RUN apk add --update git nodejs
 RUN go get github.com/matmerr/litturl
-RUN cd client && \
-    npm install && \
-    npm run build && \
-    cd /app
-CMD ["go", "run", "main.go"] 
+RUN cd $GOPATH/src/github.com/matmerr/litturl && \
+	go build main.go && \
+	cd client && \
+        npm install && \
+        npm run build
+EXPOSE 8001
+CMD ["litturl", "$GOPATH/src/github.com/matmerr/litturl/client"]
