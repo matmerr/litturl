@@ -14,7 +14,6 @@ import (
 	"fmt"
 	"log"
 	"net/http"
-	"os"
 	"time"
 
 	"github.com/gorilla/mux"
@@ -66,7 +65,6 @@ func Start(webFiles string) {
 	SetServerStatus("server ready", true)
 	apirtr := mux.NewRouter()
 	apirtr.Handle("/settings", GetSettings).Methods("GET")
-	dir, _ := os.Executable()
 
 	// serve up the static
 	apirtr.PathPrefix("/static").Handler(http.FileServer(http.Dir(webFiles)))
