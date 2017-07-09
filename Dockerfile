@@ -7,4 +7,4 @@ RUN cd $GOPATH/src/github.com/matmerr/litturl && \
         npm install && \
         npm run build
 EXPOSE 8001
-CMD ["litturl", "$GOPATH/src/github.com/matmerr/litturl/client/dist"]
+CMD ["sh", "-c", "litturl ${GOPATH}/src/github.com/matmerr/litturl/client/dist/"]
