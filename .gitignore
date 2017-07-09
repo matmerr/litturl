@@ -69,3 +69,4 @@ test/e2e/mock-template-build
 
 # OSX trash
 .DS_Store
+debug
