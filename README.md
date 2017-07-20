@@ -1,8 +1,7 @@
 # littURL
 [![CircleCI](https://circleci.com/gh/matmerr/litturl.svg?style=svg)](https://circleci.com/gh/matmerr/litturl)
 [![Go Report Card](https://goreportcard.com/badge/github.com/matmerr/litturl)](https://goreportcard.com/report/github.com/matmerr/litturl)
-[![Docker Pulls](https://img.shields.io/docker/pulls/matmerr/litturl.svg)]()
-[![](https://images.microbadger.com/badges/image/matmerr/litturl.svg)](https://microbadger.com/images/matmerr/litturl)
+
 
 > A little URL shortener.
 ## Features:
@@ -11,7 +10,10 @@
 - Material Design using [VueMaterial](http://vuematerial.io/#/) and [Vue.JS](https://vuejs.org/)
 
 
-## Get up and running with Docker Compose
+## Get up and running with Docker Compose 
+[![](https://images.microbadger.com/badges/image/matmerr/litturl.svg)](https://microbadger.com/images/matmerr/litturl)
+[![Docker Pulls](https://img.shields.io/docker/pulls/matmerr/litturl.svg)]()
+
 > If you don't have Docker Compose installed, [check this out](https://docs.docker.com/compose/install/#install-as-a-container)
 
 ```
@@ -46,6 +48,8 @@ docker run -d -p 8001:8001 -v /host/dir/conf_dir:/go/src/github.com/matmerr/litt
 [![home](docs/images/home.png)]()
 ### **Settings:**
 [![settings](docs/images/settings.png)]()
+
+
 
 ## TODO's
 - Multiuser authentication
