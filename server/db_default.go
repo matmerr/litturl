@@ -19,7 +19,7 @@ func ConnectDB() error {
 	var err error
 	log.Println("Establishing database connection...")
 	if strings.Compare(Config.DatabaseType, "Redis") == 0 {
-		db, err = NewRedisdb(Config.DatabaseAddress, Config.DatabasePort)
+		db, err = NewRedisDB(Config.DatabaseAddress, Config.DatabasePort)
 		return err
 	} else if strings.Compare(Config.DatabaseType, "MongoDB") == 0 {
 		return errors.New("MongoDB Not supported yet")
