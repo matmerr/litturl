@@ -23,8 +23,8 @@ type serverStatus struct {
 
 type serverConfig struct {
 	keyGenerator    KeyGenerator
-	apiServer       http.Server
-	urlServer       http.Server
+	apiServer       *http.Server
+	urlServer       *http.Server
 	SigningKey      []byte `json:"signingkey"`
 	WordsSHA256     string `json:"wordsSHA256"`
 	TinyAddress     string `json:"tinyaddress"`

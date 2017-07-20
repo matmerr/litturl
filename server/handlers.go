@@ -48,6 +48,7 @@ var GetJSON = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 	writeJSON(w, ut, 200)
 })
 
+// UserLogin calidate user, and returns jwt token if valid
 var UserLogin = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 
 	decoder := json.NewDecoder(r.Body)
@@ -159,6 +160,7 @@ var GetSettings = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) 
 	fmt.Fprintf(w, "%s", j)
 })
 
+// PostSettings event handler
 var PostSettings = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 
 	// Normally we could just serialize the Config, but it contains net/http which has a mutex lock
@@ -188,6 +190,7 @@ var PostSettings = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request)
 	}
 })
 
+// IndexHandler serves files out of the specified client directory
 func IndexHandler(entrypoint string) func(w http.ResponseWriter, r *http.Request) {
 	fn := func(w http.ResponseWriter, r *http.Request) {
 		http.ServeFile(w, r, entrypoint)

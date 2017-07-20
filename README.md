@@ -1,7 +1,8 @@
 # littURL
+[![CircleCI](https://circleci.com/gh/matmerr/litturl.svg?style=svg)](https://circleci.com/gh/matmerr/litturl)
+[![Go Report Card](https://goreportcard.com/badge/github.com/matmerr/litturl)](https://goreportcard.com/report/github.com/matmerr/litturl)
 [![Docker Pulls](https://img.shields.io/docker/pulls/matmerr/litturl.svg)]()
 [![](https://images.microbadger.com/badges/image/matmerr/litturl.svg)](https://microbadger.com/images/matmerr/litturl)
-[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bhttps%3A%2F%2Fgithub.com%2Fmatmerr%2Flitturl.svg?type=shield)](https://app.fossa.io/projects/git%2Bhttps%3A%2F%2Fgithub.com%2Fmatmerr%2Flitturl?ref=badge_shield)
 
 > A little URL shortener.
 ## Features:

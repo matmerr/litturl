@@ -40,9 +40,6 @@ var stopserver chan bool
 
 var db Database
 
-// directory which contains the files for web
-var client_dir string
-
 // Start the server
 func Start(webFiles string) {
 
@@ -80,7 +77,7 @@ func Start(webFiles string) {
 	apirtr.Handle("/", defaultRedirect).Methods("GET")
 	log.Println("API listening on", "0.0.0.0:8001")
 
-	Config.apiServer = http.Server{
+	Config.apiServer = &http.Server{
 		Addr:    "0.0.0.0:8001",
 		Handler: apirtr,
 	}
