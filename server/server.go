@@ -16,6 +16,8 @@ import (
 	"net/http"
 	"time"
 
+	"bytes"
+
 	"github.com/gorilla/mux"
 )
 
@@ -110,11 +112,10 @@ func (sc *serverConfig) Shutdown() {
 //MakeURLTranslation creates a URL translation type to be used for redis
 func MakeURLTranslation(oldURL string) URLTranslation {
 	key := Config.keyGenerator.GenerateKey(oldURL)
-	size := len(Config.TinyAddress) + len(key)
-	newURL := make([]byte, size)
-	b := 0
-	b += copy(newURL[b:], Config.TinyAddress)
-	b += copy(newURL[b:], key)
+	var buffer bytes.Buffer
+	buffer.WriteString(Config.TinyAddress)
+	buffer.WriteString(key)
+	newURL := buffer.String()
 	t := time.Now()
 	return URLTranslation{key, oldURL, string(newURL), t, 0}
 }

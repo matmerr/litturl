@@ -48,6 +48,7 @@ func saveConfig() {
 		f, _ := os.Create(config)
 		defer f.Close()
 		err = ioutil.WriteFile(config, bytes, 0644)
+		log.Println(err)
 	}
 }
 

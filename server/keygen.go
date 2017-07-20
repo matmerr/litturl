@@ -1,6 +1,7 @@
 package server
 
 import (
+	"bytes"
 	"hash/fnv"
 )
 
@@ -35,13 +36,11 @@ func (k KeyGenerator) GenerateKey(fullRoute string) string {
 
 func (k KeyGenerator) combineKeys(fir, sec, thir string) string {
 	firKey, secKey, thirKey := k.genSubKey(fir), k.genSubKey(sec), k.genSubKey(thir)
-	size := len(firKey) + len(secKey) + len(thirKey)
-	key := make([]byte, size)
-	b := 0
-	b += copy(key[b:], firKey)
-	b += copy(key[b:], secKey)
-	b += copy(key[b:], thirKey)
-	return string(key)
+	var buffer bytes.Buffer
+	buffer.WriteString(firKey)
+	buffer.WriteString(secKey)
+	buffer.WriteString(thirKey)
+	return buffer.String()
 }
 
 func (k KeyGenerator) genSubKey(sub string) string {
