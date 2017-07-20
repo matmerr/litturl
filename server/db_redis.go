@@ -11,25 +11,25 @@ import (
 	"github.com/go-redis/redis"
 )
 
-//redisdb is the database structure type for Redis, which
+//RedisDB is the database structure type for Redis, which
 //complies with the database{} interface
-type redisdb struct {
-	Address     string `json:"address"`
-	url_client  *redis.Client
-	user_client *redis.Client
+type RedisDB struct {
+	Address    string `json:"address"`
+	urlClient  *redis.Client
+	userClient *redis.Client
 }
 
-//NewRedisdb creates a new redis client
-func NewRedisdb(host string, port int) (*redisdb, error) {
-	var red redisdb
-	red.url_client = redis.NewClient(&redis.Options{
+//NewRedisDB creates a new redis client
+func NewRedisDB(host string, port int) (*RedisDB, error) {
+	var red RedisDB
+	red.urlClient = redis.NewClient(&redis.Options{
 		Addr:     host + ":" + strconv.Itoa(port),
 		Password: "", // no password
 		DB:       0,  // use url DB
 	})
-	t, err := red.url_client.Ping().Result()
+	t, err := red.urlClient.Ping().Result()
 
-	red.user_client = redis.NewClient(&redis.Options{
+	red.userClient = redis.NewClient(&redis.Options{
 		Addr:     host + ":" + strconv.Itoa(port),
 		Password: "", // no password
 		DB:       0,  // use user DB
@@ -44,16 +44,16 @@ func NewRedisdb(host string, port int) (*redisdb, error) {
 }
 
 //Put adds the URLdata json to the key string in redis
-func (r redisdb) Put(key string, urldata URLTranslation) error {
+func (r RedisDB) Put(key string, urldata URLTranslation) error {
 	bs, _ := json.Marshal(urldata)
-	err := r.url_client.Set(key, bs, 0).Err()
+	err := r.urlClient.Set(key, bs, 0).Err()
 	return err
 }
 
 //Get uses the key to return the URL translation
-func (r redisdb) Get(key string) (URLTranslation, error) {
+func (r RedisDB) Get(key string) (URLTranslation, error) {
 
-	jsonresult, err := r.url_client.Get(key).Result()
+	jsonresult, err := r.urlClient.Get(key).Result()
 	var u URLTranslation
 
 	if err != nil {
@@ -64,7 +64,8 @@ func (r redisdb) Get(key string) (URLTranslation, error) {
 	return u, nil
 }
 
-func (r redisdb) NewUser(username, password, group string) error {
+// NewUser creates a new user in the db
+func (r RedisDB) NewUser(username, password, group string) error {
 	u := user{username, password, group}
 	bs, _ := json.Marshal(u)
 	if len(u.Username) == 0 {
@@ -73,13 +74,14 @@ func (r redisdb) NewUser(username, password, group string) error {
 	if len(u.PasswordHash) == 0 {
 		return errors.New("invalid password")
 	}
-	err := r.user_client.Set(u.Username, bs, 0).Err()
+	err := r.userClient.Set(u.Username, bs, 0).Err()
 
 	return err
 }
 
-func (r redisdb) IsUser(testuser user) (bool, error) {
-	jsonresult, err := r.user_client.Get(testuser.Username).Result()
+// IsUser validates that the credentials are an actual use
+func (r RedisDB) IsUser(testuser user) (bool, error) {
+	jsonresult, err := r.userClient.Get(testuser.Username).Result()
 	if err != nil {
 		if err == redis.Nil {
 			return false, errors.New("username or password incorrect")
