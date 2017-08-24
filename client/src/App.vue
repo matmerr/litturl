@@ -12,7 +12,7 @@
       
       <slot></slot>
        <md-sidenav v-if="checkAuth()" class="main-sidebar md-left md-fixed" md-swipeable ref="main-sidebar">
-          <md-toolbar md-theme="white">
+          <md-toolbar md-theme="default">
             <router-link exact to="/ui/home">
               <img :src="logo" alt="Vue">
             </router-link>
@@ -46,7 +46,7 @@
       </transition>
       <md-snackbar :md-position="vertical + ' ' + horizontal" ref="snackbar" :md-duration="duration">
         <span>{{err}}</span>
-        <md-button class="md-accent" md-theme="light-blue" @click.native="$refs.snackbar.close()">OK</md-button>
+        <md-button class="md-accent" md-theme="default" @click.native="$refs.snackbar.close()">OK</md-button>
       </md-snackbar>
     </div>
 </template>
@@ -83,7 +83,7 @@ export default {
       this.$refs.snackbar.open();
     },
     redirect (target) {
-      console.log(this.router)
+      return (this.router)
     },
     postJson(object, apiUrl, redirect) {
       return this.$http.post(apiUrl, object, {
