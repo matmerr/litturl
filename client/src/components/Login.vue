@@ -58,7 +58,6 @@ export default {
       var ctx = this
       data.then(function (result) {
         if (result) {
-          console.log(result)
           ctx.$parent.errorSnackBar(result.comment)
         }
       })
