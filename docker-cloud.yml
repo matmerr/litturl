@@ -6,12 +6,6 @@ services:
       - "8001:8001"
     volumes:
       - config:/go/src/github.com/matmerr/litturl/conf
-    # for use with https://github.com/evertramos/docker-compose-letsencrypt-nginx-proxy-companion
-    environment:
-      - VIRTUAL_HOST: url.example.com
-      - VIRTUAL_PORT: 8001
-      - LETSENCRYPT_HOST: url.example.com
-      - LETSENCRYPT_EMAIL: email@example.com
     
   redis:
     image: redis:latest
