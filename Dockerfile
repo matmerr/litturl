@@ -16,22 +16,6 @@ from alpine:latest
 WORKDIR /app
 COPY --from=go-stage /app/litturl .
 COPY --from=node-stage /app/dist/ dist/
+EXPOSE 8001
 CMD ["./litturl", "dist/"]
-
-
-
-
-
-#RUN cd $LU_DIR && \
-#	apk add --update git nodejs && \
-#	go get ./... && \
-#	go build main.go && \
-#	cd client && \
-#        npm install && \
-#	#npm rebuild node-sass && \
-#        npm run build
-#EXPOSE 8001
-#WORKDIR $LU_DIR
-
-
 
