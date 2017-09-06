@@ -66,7 +66,9 @@ func (r RedisDB) Get(key string) (URLTranslation, error) {
 
 // NewUser creates a new user in the db
 func (r RedisDB) NewUser(username, password, group string) error {
-	u := user{username, password, group}
+
+	pwhash := hashPassword(password)
+	u := user{username, pwhash, group}
 	bs, _ := json.Marshal(u)
 	if len(u.Username) == 0 {
 		return errors.New("invalid username")

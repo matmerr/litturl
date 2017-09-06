@@ -91,24 +91,32 @@ export default {
     Initialize: function () {
       var ctx = this
       var data = Promise.resolve(this.SendConfig(ctx))
-      data.then(function (result) {
-        if (result) {
-          ctx.$parent.errorSnackBar(result)
+      data.then(function (response) {
+        if (response.body.success === true) {
+          setTimeout(function () {
+            console.log("pushing...")
+            router.push('/ui/login')
+          }, 2000)
+          ctx.$parent.errorSnackBar(response.body.comment)
+        } else {
+          console.log("bad")
+          ctx.$parent.errorSnackBar(response.body.comment)
         }
+      }, function (response) {
+        ctx.$parent.errorSnackBar(response.body.comment)
+      }).catch( e => {
+        ctx.$parent.errorSnackBar(e.message)
       })
     },
     SendConfig: function (ctx) {
       return ctx.$http.post('/api/config', this.config).then(response => {
-        if (response.body.success === true) {
-          router.push('/ui/login')
-        } else {
-          return response.body.comment
-        }
-      }, response => {
-        return response.body.comment
+        return response
       }).catch(e => {
         return e.message
       })
+    }, 
+    sleep: function (ms) {
+      return new Promise(resolve => setTimeout(resolve, ms));
     }
   }
 }

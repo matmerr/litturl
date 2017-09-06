@@ -13,14 +13,19 @@ Vue.use(VueMaterial)
 
 Vue.config.productionTip = false
 
-Vue.material.registerTheme('default', {
-  primary: {
-    color: 'cyan',
-    hue: '900'
+Vue.material.registerTheme({
+  default: {
+    primary: {
+      color: 'cyan',
+      hue: '900'
+    },
+    accent: 'red',
+    warn: 'red',
+    background: 'white'
   },
-  accent: 'red',
-  warn: 'red',
-  background: 'white'
+  white: {
+    primary: 'white'
+  }
 })
 
 /* eslint-disable no-new */

@@ -12,11 +12,11 @@
       
       <slot></slot>
        <md-sidenav v-if="checkAuth()" class="main-sidebar md-left md-fixed" md-swipeable ref="main-sidebar">
-          <md-toolbar md-theme="default">
+          <md-toolbar md-theme="white">
             <router-link exact to="/ui/home">
               <img :src="logo" alt="Vue">
             </router-link>
-        </md-toolbar>
+          </md-toolbar>
         <div class="main-sidebar-links">
           <md-list class="md-dense">
           <md-list-item>

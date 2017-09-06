@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"strings"
 	"time"
+	"golang.org/x/crypto/bcrypt"
 
 	jwtmiddleware "github.com/auth0/go-jwt-middleware"
 	jwt "github.com/dgrijalva/jwt-go"
@@ -205,9 +206,29 @@ var jwtMiddleware = jwtmiddleware.New(jwtmiddleware.Options{
 	SigningMethod: jwt.SigningMethodHS256,
 })
 
-func userDiff(user1 user, user2 user) bool {
-	if strings.Compare(user1.Username, user2.Username) == 0 && strings.Compare(user1.PasswordHash, user2.PasswordHash) == 0 && strings.Compare(user1.Group, user2.Group) == 0 {
+func userDiff(user1, user2 user) bool {
+	if strings.Compare(user1.Username, user2.Username) == 0 && strings.Compare(user1.Group, user2.Group) == 0 {
+		err := bcrypt.CompareHashAndPassword([]byte(user1.PasswordHash), []byte(user2.PasswordHash))
+		if err != nil {
+			log.Println(err)
+		} else{
+			return true
+		}
+	}
+	return false
+}
+
+func userGroupCheck(user1, user2 user) bool {
+	if (strings.Compare(user1.Group, user2.Group) == 0){
 		return true
 	}
 	return false
+}
+
+func hashPassword(password string) string {
+	hash, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
+	if err != nil {
+		log.Println(err)
+	}
+	return string(hash)
 }

@@ -172,8 +172,8 @@ var PostConfig = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		writeStatus(w, "successfully loaded config", true, 200)
 		stopserver <- true
+		writeStatus(w, "config created, redirecting...", true, 200)
 	}
 })
 

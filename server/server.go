@@ -45,6 +45,7 @@ var db Database
 // Start the server
 func Start(webFiles string) {
 
+	log.Println("loading config...")
 	loadConfig(webFiles)
 
 	// if there is no existing connection to the database
@@ -60,6 +61,7 @@ func Start(webFiles string) {
 	// create the keygenerator used for
 	Config.keyGenerator, _ = MakeKeyGenerator(3, 4, Config.TinyAddress)
 
+	log.Println("server ready")
 	// setup API shortner redirect
 	SetServerStatus("server ready", true)
 	apirtr := mux.NewRouter()
