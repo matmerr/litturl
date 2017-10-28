@@ -9,6 +9,7 @@ package server
 // curl -H "Content-Type: application/json" -X POST -d '{"apikey":"lolkey","url":"github.com/matmerr"}' http://192.168.91.1:8000/add
 
 import (
+	"bytes"
 	"context"
 	"encoding/json"
 	"fmt"
@@ -16,9 +17,8 @@ import (
 	"net/http"
 	"time"
 
-	"bytes"
-
 	"github.com/gorilla/mux"
+	"github.com/matmerr/dataface"
 )
 
 //ServerStatus is the type which is sent when /status is requested on the api port
@@ -30,17 +30,10 @@ var Config serverConfig
 //JSONObject is the base interface for serializing structs
 type JSONObject interface{}
 
-func (sc serverConfig) PUT(db Database, key string, ut URLTranslation) error {
-	return db.Put(key, ut)
-}
-func (sc serverConfig) GET(db Database, key string) (URLTranslation, error) {
-	return db.Get(key)
-}
-
 // this channel is reserved for stopping webservers
 var stopserver chan bool
 
-var db Database
+var db *dataface.Database
 
 // Start the server
 func Start(webFiles string) {

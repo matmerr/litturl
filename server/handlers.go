@@ -7,11 +7,11 @@ import (
 	"net/http"
 	"strings"
 	"time"
-	"golang.org/x/crypto/bcrypt"
 
 	jwtmiddleware "github.com/auth0/go-jwt-middleware"
 	jwt "github.com/dgrijalva/jwt-go"
 	"github.com/gorilla/mux"
+	"golang.org/x/crypto/bcrypt"
 )
 
 //GetRedirect gets the stranslation from the keystore, then issues a redirect
@@ -20,7 +20,7 @@ var GetRedirect = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) 
 	j := vars["target"]
 
 	log.Println("REDIRECT: key to use", j)
-	y, err := Config.GET(db, j)
+	y, err := getURLTranslation(j)
 	if err != nil {
 		http.Redirect(w, r, "/ui", http.StatusMovedPermanently)
 		return
@@ -29,7 +29,7 @@ var GetRedirect = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) 
 	http.Redirect(w, r, y.OldURL, http.StatusMovedPermanently)
 	go func() {
 		y.Clicks++
-		Config.PUT(db, y.Wordkey, y)
+		putURLTranslation(y.Wordkey, y)
 	}()
 })
 
@@ -38,7 +38,7 @@ var GetJSON = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	t := vars["target"]
 
-	ut, err := Config.GET(db, t)
+	ut, err := getURLTranslation(t)
 	if err != nil {
 		writeStatus(w, "key does not exist", false, 404)
 		return
@@ -46,7 +46,7 @@ var GetJSON = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		writeStatus(w, err.Error(), false, 500)
 		return
 	}
-	writeJSON(w, ut, 200)
+	writeJSON(w, *ut, 200)
 })
 
 // UserLogin calidate user, and returns jwt token if valid
@@ -62,7 +62,7 @@ var UserLogin = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// check if the user is legit
-	isUser, err := db.IsUser(u)
+	isUser, err := isUser(u)
 	if err != nil && !isUser {
 		writeStatus(w, error.Error(err), false, 501)
 		return
@@ -119,12 +119,12 @@ var PostTranslation = http.HandlerFunc(func(w http.ResponseWriter, r *http.Reque
 
 	log.Println("POST: struct generated", uTranslation)
 
-	_, err = Config.GET(db, uTranslation.Wordkey)
+	_, err = getURLTranslation(uTranslation.Wordkey)
 	// err == redis.Nil, then there is no key and we can add
 	// run this check to preserve click count and creation time
 	if err != nil {
 		writeStatus(w, uTranslation.NewURL, true, 200)
-		Config.PUT(db, uTranslation.Wordkey, uTranslation)
+		putURLTranslation(uTranslation.Wordkey, &uTranslation)
 
 	} else {
 		// the url mapping already exists, but we'll retun the new url anyway
@@ -211,7 +211,7 @@ func userDiff(user1, user2 user) bool {
 		err := bcrypt.CompareHashAndPassword([]byte(user1.PasswordHash), []byte(user2.PasswordHash))
 		if err != nil {
 			log.Println(err)
-		} else{
+		} else {
 			return true
 		}
 	}
@@ -219,7 +219,7 @@ func userDiff(user1, user2 user) bool {
 }
 
 func userGroupCheck(user1, user2 user) bool {
-	if (strings.Compare(user1.Group, user2.Group) == 0){
+	if strings.Compare(user1.Group, user2.Group) == 0 {
 		return true
 	}
 	return false
