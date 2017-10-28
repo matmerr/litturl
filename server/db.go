@@ -15,18 +15,33 @@ func ConnectDB() error {
 	log.Println("Establishing database connection...")
 	if strings.Compare(Config.DatabaseType, "Redis") == 0 {
 		//db, err = NewRedisDB(Config.DatabaseAddress, Config.DatabasePort)
-		db, err := dataface.InitializeDatabase("redis", Config.DatabaseAddress, Config.DatabasePort, "", "")
+		db, err = dataface.InitializeDatabase("redis", Config.DatabaseAddress, Config.DatabasePort, "", "")
 		return err
 	} else if strings.Compare(Config.DatabaseType, "MongoDB") == 0 {
-		db, err := dataface.InitializeDatabase("mongo", Config.DatabaseAddress, Config.DatabasePort, "", "")
+		db, err = dataface.InitializeDatabase("mongo", Config.DatabaseAddress, Config.DatabasePort, "", "")
 	} else {
 		return errors.New("database not correct type")
 	}
 	return err
 }
 
-// NewUser creates a new user in the db
-func NewUser(username, password, group string) error {
+func getURLTranslation(key string) (*URLTranslation, error) {
+	var u URLTranslation
+	result, err := db.Get(key)
+	if err != nil {
+		return nil, err
+	}
+	resultReader := strings.NewReader(string(result))
+	json.NewDecoder(resultReader).Decode(&u)
+	return &u, nil
+}
+func putURLTranslation(key string, urldata *URLTranslation) error {
+	bs, _ := json.Marshal(urldata)
+	err := db.Put(key, bs)
+	return err
+}
+
+func newUser(username, password, group string) error {
 
 	pwhash := hashPassword(password)
 	u := user{username, pwhash, group}
@@ -43,7 +58,7 @@ func NewUser(username, password, group string) error {
 }
 
 // IsUser validates that the credentials are an actual use
-func IsUser(testuser user) (bool, error) {
+func isUser(testuser user) (bool, error) {
 	jsonresult, err := db.Get(testuser.Username)
 	if err != nil {
 		// need to fix

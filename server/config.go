@@ -3,7 +3,9 @@ package server
 import (
 	"context"
 	"crypto/rand"
+	"crypto/rsa"
 	"crypto/sha256"
+	"crypto/x509"
 	"encoding/hex"
 	"encoding/json"
 	"io"
@@ -14,10 +16,6 @@ import (
 	"path/filepath"
 	"strings"
 	"time"
-
-	"crypto/rsa"
-
-	"crypto/x509"
 
 	"github.com/gorilla/mux"
 )
@@ -165,7 +163,7 @@ var PostConfig = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 
 		// at this point the connection to the db has been established,
 		// let's create the supplied user
-		err = db.NewUser(init.Username, init.Password, init.Group)
+		err = newUser(init.Username, init.Password, init.Group)
 		if err != nil {
 			log.Println(error.Error(err))
 			writeStatus(w, err.Error(), false, 200)
