@@ -1,4 +1,5 @@
-# littURL
+# littURL 
+(Deprecated)
 [![CircleCI](https://circleci.com/gh/matmerr/litturl.svg?style=svg)](https://circleci.com/gh/matmerr/litturl)
 [![Go Report Card](https://goreportcard.com/badge/github.com/matmerr/litturl)](https://goreportcard.com/report/github.com/matmerr/litturl)
 
