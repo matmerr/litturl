@@ -1,16 +1,17 @@
-FROM golang:alpine as go-stage
-ENV LU_DIR=$GOPATH/src/github.com/matmerr/litturl/
-WORKDIR $LU_DIR
+FROM golang:1.24-alpine AS go-stage
+WORKDIR /app
+COPY go.mod go.sum ./
+RUN apk add --update git && go mod download
 COPY server server
 COPY main.go .
-RUN apk add --update git && go get ./...
-RUN go build  -o /app/litturl main.go
+RUN go build -o /app/litturl .
 
-FROM node:alpine as node-stage
-RUN apk add --update git 
+FROM node:22-alpine AS node-stage
 WORKDIR /app
-COPY client .
-RUN npm install && npm rebuild node-sass && npm run build
+COPY client/package.json client/package-lock.json ./
+RUN npm ci
+COPY client/ .
+RUN npm run build
 
 FROM alpine:latest
 WORKDIR /app

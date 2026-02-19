@@ -1,95 +1,66 @@
 <template>
-  <div id="home">
-    <md-layout md-gutter md-column>
-      <md-layout md-column>
-        <md-card>
-          <md-card-header>
-            <div class="md-title">
-              Home
-            </div>
-          </md-card-header>
-          <md-card-content>
-            <md-input-container>
-              <label>Long URL</label>
-              <md-input v-model="urlform"></md-input>
-            </md-input-container>
-            <md-switch v-model="showCustom" name="showCustom" class="md-primary">Use Custom Short URL</md-switch>
-            <md-layout v-if="showCustom">
-              <md-layout md-flex="100">
-                <md-input-container>
-                  <label>Custom URL Mapping</label>
-                  <md-input v-model="custom"></md-input>
-                </md-input-container>
-                Result: {{tinyaddress}}{{custom}}
-              </md-layout>
-            </md-layout>
-            <md-layout>
-            </md-layout>
-            <md-layout md-gutter>
-              <md-button class="md-raised md-primary" @click.native="postURL()">Shorten</md-button>
-            </md-layout>
-          </md-card-content>
-        </md-card>
-      </md-layout>
-      <br>
-      <md-layout md-column>
-        <md-card>
-          <md-table>
-            <md-table-header>
-              <md-table-row>
-                <md-table-head>Short URL </md-table-head>
-                <md-table-head>Success</md-table-head>
-              </md-table-row>
-            </md-table-header>
-            <md-table-body>
-              <md-table-row v-for="url in urlList" :key="url">
-                <md-table-cell>{{url.newUrl}}</md-table-cell>
-                <md-table-cell>{{url.success}}</md-table-cell>
-              </md-table-row>
-            </md-table-body>
-          </md-table>
-        </md-card>
-      </md-layout>
-    </md-layout>
-  </div>
+  <v-container class="mt-4">
+    <v-row>
+      <v-col cols="12">
+        <v-card>
+          <v-card-title>Home</v-card-title>
+          <v-card-text>
+            <v-text-field label="Long URL" v-model="urlform" />
+            <v-switch v-model="showCustom" label="Use Custom Short URL" color="primary" />
+            <template v-if="showCustom">
+              <v-text-field label="Custom URL Mapping" v-model="custom" />
+              <p>Result: {{ tinyaddress }}{{ custom }}</p>
+            </template>
+            <v-btn color="primary" @click="postURL">Shorten</v-btn>
+          </v-card-text>
+        </v-card>
+      </v-col>
+    </v-row>
+    <v-row class="mt-4">
+      <v-col cols="12">
+        <v-card>
+          <v-table>
+            <thead>
+              <tr>
+                <th>Short URL</th>
+                <th>Success</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="(url, i) in urlList" :key="url.newUrl || i">
+                <td>{{ url.newUrl }}</td>
+                <td>{{ url.success }}</td>
+              </tr>
+            </tbody>
+          </v-table>
+        </v-card>
+      </v-col>
+    </v-row>
+  </v-container>
 </template>
 
 <script>
-
 const API_ADDURL = '/api/url/add'
 
 export default {
-
-  name: 'home',
-  data: function () {
+  name: 'Home',
+  inject: ['postJson', 'showSnack'],
+  data () {
     return {
       urlList: [],
-      jsondata: '',
       urlform: '',
       showCustom: false,
       custom: '',
-      tinyaddress: localStorage.getItem('tinyaddress')
+      tinyaddress: localStorage.getItem('tinyaddress') || ''
     }
   },
   methods: {
-    postURL: function () {
-      var ctx = this
-      var data = Promise.resolve(this.$parent.postJson(JSON.stringify({ url: this.urlform, custom: this.custom }), API_ADDURL))
-      data.then(result => {
-        if (result) {
-          ctx.urlList.push({ newUrl: result.comment, success: result.success })
-        }
-      })
+    async postURL () {
+      const result = await this.postJson({ url: this.urlform, custom: this.custom }, API_ADDURL)
+      if (result) {
+        this.urlList.push({ newUrl: result.comment, success: result.success })
+      }
     }
   }
 }
 </script>
-
-<style>
-#home {
-  overflow: auto;
-  margin-top: 30px;
-  margin-left: 30px;
-  margin-right: 30px;
-}
-</style>

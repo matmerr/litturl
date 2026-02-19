@@ -1,76 +1,49 @@
 <template>
-  <div id="login">
-  
-    <md-card>
-      <md-card-header>
-        <div class="md-title">
-          littURL
-        </div>
-        <div class="md-subhead">
-          "The Little URL Shortener"
-        </div>
-      </md-card-header>
-      <md-card-content>
-        <md-layout md-gutter>
-          <md-input-container>
-            <md-icon class="md-primary">perm_identity</md-icon>
-            <label>Username</label>
-            <md-input required v-model="credentials.username"></md-input>
-          </md-input-container>
-          <md-input-container md-has-password>
-            <md-icon class="md-primary">lock</md-icon>
-            <label>Password</label>
-            <md-input required type="password" v-model="credentials.password"></md-input>
-          </md-input-container>
-          <md-layout md-align="end">
-            <span class="md-caption">* indicates required</span>
-          </md-layout>
-  
-        </md-layout>
-        <md-layout md-align="center">
-          <md-button class="md-raised md-primary" @click.native="Login()">Login</md-button>
-        </md-layout>
-      </md-card-content>
-  
-    </md-card>
-  
-  </div>
+  <v-container style="max-width:500px;margin-top:60px">
+    <v-card>
+      <v-card-title>littURL</v-card-title>
+      <v-card-subtitle>"The Little URL Shortener"</v-card-subtitle>
+      <v-card-text>
+        <v-text-field
+          v-model="credentials.username"
+          label="Username"
+          prepend-icon="mdi-account"
+          required
+        />
+        <v-text-field
+          v-model="credentials.password"
+          label="Password"
+          type="password"
+          prepend-icon="mdi-lock"
+          required
+        />
+        <p class="text-caption text-right">* indicates required</p>
+      </v-card-text>
+      <v-card-actions class="justify-center">
+        <v-btn color="primary" variant="elevated" @click="Login">Login</v-btn>
+      </v-card-actions>
+    </v-card>
+  </v-container>
 </template>
 
 <script>
-
 import auth from '../auth'
 
 export default {
-  name: 'login',
-  data: function () {
+  name: 'Login',
+  inject: ['showSnack'],
+  data () {
     return {
-      credentials: {
-        username: '',
-        password: '',
-        group: 'admin'
-      }
+      credentials: { username: '', password: '', group: 'admin' }
     }
   },
   methods: {
-    Login () {
-      var data = Promise.resolve(auth.Login(this, this.credentials, '/ui/home'))
-      var ctx = this
-      data.then(function (result) {
-        if (result) {
-          ctx.$parent.errorSnackBar(result.comment)
-        }
-      })
+    async Login () {
+      const err = await auth.Login(this.credentials)
+      if (err) {
+        this.showSnack(err.comment || 'Login failed')
+      }
     }
   }
 }
 </script>
-
-<style>
-#login {
-  width: 50%;
-  margin: 0 auto;
-  margin-top: 60px;
-  max-width: 500px;
-}
-</style>

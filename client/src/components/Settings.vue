@@ -1,98 +1,48 @@
 <template>
-  <div id="settings">
-    <md-card>
-      <md-card-header>
-        <div class="md-title">
-          Settings
-        </div>
-      </md-card-header>
-      <md-card-content>
-        <md-layout md-gutter>
-          <md-input-container>
-            <md-icon class="md-primary">perm_identity</md-icon>
-            <label>Words Hash</label>
-            <md-input disabled v-model="settings.wordsSHA256"></md-input>
-          </md-input-container>
-          <md-input-container>
-            <md-icon class="md-primary">perm_identity</md-icon>
-            <label>Database Type</label>
-            <md-input disabled v-model="settings.db_type"></md-input>
-          </md-input-container> 
-          <md-input-container>
-            <md-icon class="md-primary">perm_identity</md-icon>
-            <label>{{settings.db_type}} Address</label>
-            <md-input disabled v-model="settings.db_address"></md-input>
-          </md-input-container>
-          <md-input-container>
-            <md-icon class="md-primary">perm_identity</md-icon>
-            <label>{{settings.db_type}} Port</label>
-            <md-input disabled v-model="settings.db_port"></md-input>
-          </md-input-container>            
-          <md-input-container>
-            <md-icon class="md-primary">perm_identity</md-icon>
-            <label>Short URL Hostname</label>
-            <md-input required v-model="settings.tinyaddress"></md-input>
-          </md-input-container>
-
-          <md-layout md-align="end">
-            <span class="md-caption">* indicates required</span>
-          </md-layout>
-  
-        </md-layout>
-        <md-layout md-align="center">
-          <md-button class="md-raised md-primary" @click.native="PostSettings()">Update </md-button>
-        </md-layout>
-      </md-card-content>
-  
-    </md-card>
-  
-  </div>
+  <v-container class="mt-4" style="max-width:600px">
+    <v-card>
+      <v-card-title>Settings</v-card-title>
+      <v-card-text>
+        <v-text-field label="Words Hash" v-model="settings.wordsSHA256" disabled prepend-icon="mdi-key-variant" />
+        <v-text-field label="Database Type" v-model="settings.db_type" disabled prepend-icon="mdi-database" />
+        <v-text-field :label="settings.db_type + ' Address'" v-model="settings.db_address" disabled prepend-icon="mdi-server" />
+        <v-text-field :label="settings.db_type + ' Port'" v-model="settings.db_port" disabled prepend-icon="mdi-numeric" />
+        <v-text-field label="Short URL Hostname" v-model="settings.tinyaddress" required prepend-icon="mdi-link" />
+        <p class="text-caption text-right">* indicates required</p>
+      </v-card-text>
+      <v-card-actions class="justify-center">
+        <v-btn color="primary" variant="elevated" @click="PostSettings">Update</v-btn>
+      </v-card-actions>
+    </v-card>
+  </v-container>
 </template>
 
 <script>
-
 import auth from '../auth'
 
 export default {
-  name: 'settings',
-  data: function () {
+  name: 'Settings',
+  inject: ['postJson', 'showSnack'],
+  data () {
     return {
-      settings: {
-        wordsSHA256: '',
-        tinyaddress: '',
-        db_type: '',
-        db_address: '',
-        db_port: 1
-      }
+      settings: { wordsSHA256: '', tinyaddress: '', db_type: '', db_address: '', db_port: 1 }
     }
+  },
+  async beforeMount () {
+    const s = await auth.GetSettings()
+    if (s) this.settings = s
   },
   methods: {
-    PostSettings: function () {
-      var data = Promise.resolve(this.$parent.postJson(this.settings, '/api/settings', ''))
-      var ctx = this
-      data.then(function (result) {
-        if (result) {
-          ctx.$parent.errorSnackBar(result.comment)
-          if (ctx.settings.tinyaddress.slice(-1) !== '/') {
-            ctx.settings.tinyaddress += '/'
-          }
-          localStorage.setItem('tinyaddress', ctx.settings.tinyaddress)
+    async PostSettings () {
+      const result = await this.postJson(this.settings, '/api/settings')
+      if (result) {
+        this.showSnack(result.comment)
+        if (this.settings.tinyaddress.slice(-1) !== '/') {
+          this.settings.tinyaddress += '/'
         }
-      }).catch(e => {
-        console.log(e)
-      })
+        localStorage.setItem('tinyaddress', this.settings.tinyaddress)
+      }
     }
-  },
-  beforeMount: function () {
-    auth.GetSettings(this)
   }
 }
 </script>
-
-<style>
-#settings {
-  margin-top: 30px;
-  margin-left: 30px;
-  margin-right: 30px;
-}
-</style>
