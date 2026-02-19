@@ -1,39 +1,35 @@
-// The Vue build version to load with the `import` command
-// (runtime-only or standalone) has been set in webpack.base.conf with an alias.
-import Vue from 'vue'
-import App from './App'
-import router from './router.js'
+import { createApp } from 'vue'
+import App from './App.vue'
+import router from './router'
+import axios from 'axios'
+import { createVuetify } from 'vuetify'
+import * as components from 'vuetify/components'
+import * as directives from 'vuetify/directives'
+import 'vuetify/styles'
+import '@mdi/font/css/materialdesignicons.css'
 
-import VueResource from 'vue-resource'
-Vue.use(VueResource)
-
-import VueMaterial from 'vue-material'
-import 'vue-material/dist/vue-material.css'
-Vue.use(VueMaterial)
-
-Vue.config.productionTip = false
-
-Vue.material.registerTheme({
-  default: {
-    primary: {
-      color: 'cyan',
-      hue: '900'
-    },
-    accent: 'red',
-    warn: 'red',
-    background: 'white'
+const vuetify = createVuetify({
+  components,
+  directives,
+  theme: {
+    defaultTheme: 'light',
+    themes: {
+      light: {
+        colors: {
+          primary: '#006064',
+          secondary: '#f44336',
+          error: '#f44336'
+        }
+      }
+    }
   },
-  white: {
-    primary: 'white'
+  icons: {
+    defaultSet: 'mdi'
   }
 })
 
-/* eslint-disable no-new */
-new Vue({
-  el: '#app',
-  router,
-  template: '<App/>',
-  components: {
-    App
-  }
-})
+const app = createApp(App)
+app.config.globalProperties.$axios = axios
+app.use(router)
+app.use(vuetify)
+app.mount('#app')

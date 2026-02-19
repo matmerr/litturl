@@ -1,64 +1,51 @@
+import axios from 'axios'
 import router from '../router'
-const API = '/api/'
-const USER_API = API + 'user/'
-const LOGIN_API = USER_API + 'login'
+
+const LOGIN_API = '/api/user/login'
 
 export default {
   user: {
     authenticated: false
   },
 
-  Login (ctx, creds, redirect) {
-    return ctx.$http.post(LOGIN_API, creds).then(response => {
-      localStorage.setItem('id_token', response.body.id_token)
-      localStorage.setItem('access_token', response.body.access_token)
+  async Login (creds) {
+    try {
+      const response = await axios.post(LOGIN_API, creds)
+      localStorage.setItem('id_token', response.data.id_token)
+      localStorage.setItem('access_token', response.data.access_token)
       this.user.authenticated = true
-      this.GetSettings(ctx)
-
-      if (redirect) {
-        router.push(redirect)
-      }
-    }, response => {
-      return response.body
-    }).catch(e => {
-      return e.message
-    })
-  },
-  isAuthenticated () {
-    var jwt = localStorage.getItem('id_token')
-    if (jwt) {
-      return true
+      await router.push('/ui/home')
+      return null
+    } catch (e) {
+      return e.response ? e.response.data : { comment: e.message }
     }
-    return false
+  },
+
+  isAuthenticated () {
+    return !!localStorage.getItem('id_token')
   },
 
   getAuthHeader () {
-    return {
-      'Authorization': 'Bearer ' + localStorage.getItem('access_token')
-    }
+    return { Authorization: 'Bearer ' + localStorage.getItem('access_token') }
   },
 
-  GetSettings (ctx) {
-    var data = Promise.resolve(ctx.$http.get('/api/settings', {
-      headers: this.getAuthHeader()
-    }).then(response => {
-      return response
-    }).catch(e => {
-      return e
-    }))
-    data.then(res => {
-      if (res) {
-        ctx.settings = res.body
-        localStorage.setItem('tinyaddress', res.body.tinyaddress)
+  async GetSettings () {
+    try {
+      const response = await axios.get('/api/settings', { headers: this.getAuthHeader() })
+      const body = response.data
+      if (body && body.tinyaddress) {
+        localStorage.setItem('tinyaddress', body.tinyaddress)
       }
-    })
+      return body
+    } catch {
+      return null
+    }
   },
 
   Logout () {
     localStorage.removeItem('id_token')
     localStorage.removeItem('access_token')
     this.user.authenticated = false
-    router.push("/ui/login")
+    router.push('/ui/login')
   }
-
 }

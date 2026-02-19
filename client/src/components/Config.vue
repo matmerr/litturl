@@ -1,132 +1,53 @@
 <template>
-  <div id="config">
+  <v-container style="max-width:500px;margin-top:60px">
+    <v-card class="mb-4">
+      <v-card-title>Create First User</v-card-title>
+      <v-card-text>
+        <v-text-field v-model="config.username" label="New Username" prepend-icon="mdi-account" required />
+        <v-text-field v-model="config.password" label="New Password" type="password" prepend-icon="mdi-lock" required />
+      </v-card-text>
+    </v-card>
 
-
-        <md-card>
-          <md-card-header>
-            <div class="md-title">
-              Create First User
-            </div>
-          </md-card-header>
-          <md-card-content>
-
-              <md-input-container>
-                <md-icon class="md-primary">perm_identity</md-icon>
-                <label>New Username</label>
-                <md-input required v-model="config.username"></md-input>
-              </md-input-container>
-              <md-input-container md-has-password>
-                <md-icon class="md-primary">lock</md-icon>
-                <label>New Password</label>
-                <md-input required type="password" v-model="config.password"></md-input>
-              </md-input-container>
-          </md-card-content>
-        </md-card>
-    <br>
-      <md-card>
-        <md-card-header>
-          <div class="md-title">
-            Initial Server Setup
-          </div>
-        </md-card-header>
-        <md-card-content>
-          <md-input-container>
-            <label>Short URL Address</label>
-            <md-input required v-model="config.tinyaddress" placeholder="Short URL Address (ex. https://litt.url)"></md-input>
-          </md-input-container>
-          <md-input-container>
-  
-            <label for="db">Database Type</label>
-            <md-select required name="db" id="db" v-model="config.db_type">
-              <md-option value="Redis">Redis
-              </md-option>
-              <md-option disabled=true value="MongoDB">MongoDB</md-option>
-            </md-select>
-          </md-input-container>
-  
-          <md-input-container>
-            <label>Database Address</label>
-            <md-input required v-model="config.db_address"></md-input>
-          </md-input-container>
-          <md-input-container>
-            <label>Database Port</label>
-            <md-input type="number" required v-model="config.db_port"></md-input>
-          </md-input-container>
-
-          <md-layout md-align="end">
-            <span class="md-caption">* indicates required</span>
-          </md-layout>
-          </md-layout>
-          <md-layout md-align="center">
-            <md-button class="md-raised md-primary" @click.native="Initialize()">Start!</md-button>
-          </md-layout>
-  
-        </md-card-content>
-      </md-card>
-      
-    </div>
-
+    <v-card>
+      <v-card-title>Initial Server Setup</v-card-title>
+      <v-card-text>
+        <v-text-field v-model="config.tinyaddress" label="Short URL Address" placeholder="https://litt.url" required />
+        <v-select v-model="config.db_type" label="Database Type" :items="['Redis']" required />
+        <v-text-field v-model="config.db_address" label="Database Address" required />
+        <v-text-field v-model="config.db_port" label="Database Port" type="number" required />
+        <p class="text-caption text-right">* indicates required</p>
+      </v-card-text>
+      <v-card-actions class="justify-center">
+        <v-btn color="primary" variant="elevated" @click="Initialize">Start!</v-btn>
+      </v-card-actions>
+    </v-card>
+  </v-container>
 </template>
 
 <script>
-
+import axios from 'axios'
 import router from '../router'
 
 export default {
-  name: 'config',
+  name: 'Config',
+  inject: ['showSnack'],
   data () {
     return {
-      config: {
-        username: '',
-        password: '',
-        group: 'admin',
-        tinyaddress: '',
-        db_type: 'Redis',
-        db_address: 'redis',
-        db_port: 6379
-      }
+      config: { username: '', password: '', group: 'admin', tinyaddress: '', db_type: 'Redis', db_address: 'redis', db_port: 6379 }
     }
   },
   methods: {
-    Initialize: function () {
-      var ctx = this
-      var data = Promise.resolve(this.SendConfig(ctx))
-      data.then(function (response) {
-        if (response.body.success === true) {
-          setTimeout(function () {
-            console.log("pushing...")
-            router.push('/ui/login')
-          }, 2000)
-          ctx.$parent.errorSnackBar(response.body.comment)
-        } else {
-          console.log("bad")
-          ctx.$parent.errorSnackBar(response.body.comment)
+    async Initialize () {
+      try {
+        const response = await axios.post('/api/config', this.config)
+        this.showSnack(response.data.comment)
+        if (response.data.success) {
+          setTimeout(() => router.push('/ui/login'), 2000)
         }
-      }, function (response) {
-        ctx.$parent.errorSnackBar(response.body.comment)
-      }).catch( e => {
-        ctx.$parent.errorSnackBar(e.message)
-      })
-    },
-    SendConfig: function (ctx) {
-      return ctx.$http.post('/api/config', this.config).then(response => {
-        return response
-      }).catch(e => {
-        return e.message
-      })
-    }, 
-    sleep: function (ms) {
-      return new Promise(resolve => setTimeout(resolve, ms));
+      } catch (e) {
+        this.showSnack(e.response ? e.response.data.comment : e.message)
+      }
     }
   }
 }
 </script>
-
-<style>
-#config {
-  width: 50%;
-  margin: 0 auto;
-  margin-top: 60px;
-  max-width: 500px;
-}
-</style>
