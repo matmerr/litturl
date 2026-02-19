@@ -27,7 +27,10 @@ func TestMakeURLTranslationKey(t *testing.T) {
 }
 
 func TestGenerateKeyDeterministic(t *testing.T) {
-	kg, _ := MakeKeyGenerator(3, 4, "http://short.ly/")
+	kg, err := MakeKeyGenerator(3, 4, "http://short.ly/")
+	if err != nil {
+		t.Fatalf("MakeKeyGenerator returned error: %v", err)
+	}
 	url := "https://example.com/some/path"
 	key1 := kg.GenerateKey(url)
 	key2 := kg.GenerateKey(url)
@@ -37,7 +40,10 @@ func TestGenerateKeyDeterministic(t *testing.T) {
 }
 
 func TestGenerateKeyDifferentURLs(t *testing.T) {
-	kg, _ := MakeKeyGenerator(3, 4, "http://short.ly/")
+	kg, err := MakeKeyGenerator(3, 4, "http://short.ly/")
+	if err != nil {
+		t.Fatalf("MakeKeyGenerator returned error: %v", err)
+	}
 	key1 := kg.GenerateKey("https://example.com/a")
 	key2 := kg.GenerateKey("https://example.com/b")
 	if key1 == key2 {
@@ -46,7 +52,19 @@ func TestGenerateKeyDifferentURLs(t *testing.T) {
 }
 
 func TestMakeURLTranslationFields(t *testing.T) {
-	kg, _ := MakeKeyGenerator(3, 4, "http://short.ly/")
+	kg, err := MakeKeyGenerator(3, 4, "http://short.ly/")
+	if err != nil {
+		t.Fatalf("MakeKeyGenerator returned error: %v", err)
+	}
+
+	// Save and restore global Config state so this test doesn't affect others.
+	prevKeyGenerator := Config.keyGenerator
+	prevTinyAddress := Config.TinyAddress
+	defer func() {
+		Config.keyGenerator = prevKeyGenerator
+		Config.TinyAddress = prevTinyAddress
+	}()
+
 	Config.keyGenerator = kg
 	Config.TinyAddress = "http://short.ly/"
 

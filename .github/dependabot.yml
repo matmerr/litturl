@@ -1,6 +1,6 @@
 # Monthly batch dependency updates – one grouped PR per ecosystem.
-# Security-relevant updates are grouped together so a single PR
-# can be reviewed, tested by CI, and merged each month.
+# Only security vulnerabilities are proposed; regular version bumps are
+# suppressed via ignore rules (security updates bypass ignore conditions).
 version: 2
 updates:
   - package-ecosystem: "gomod"
@@ -11,6 +11,12 @@ updates:
       all-go-deps:
         patterns:
           - "*"
+    ignore:
+      - dependency-name: "*"
+        update-types:
+          - "version-update:semver-major"
+          - "version-update:semver-minor"
+          - "version-update:semver-patch"
     open-pull-requests-limit: 1
 
   - package-ecosystem: "npm"
@@ -21,6 +27,12 @@ updates:
       all-npm-deps:
         patterns:
           - "*"
+    ignore:
+      - dependency-name: "*"
+        update-types:
+          - "version-update:semver-major"
+          - "version-update:semver-minor"
+          - "version-update:semver-patch"
     open-pull-requests-limit: 1
 
   - package-ecosystem: "github-actions"
@@ -31,4 +43,10 @@ updates:
       all-actions:
         patterns:
           - "*"
+    ignore:
+      - dependency-name: "*"
+        update-types:
+          - "version-update:semver-major"
+          - "version-update:semver-minor"
+          - "version-update:semver-patch"
     open-pull-requests-limit: 1
