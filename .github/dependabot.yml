@@ -1,0 +1,34 @@
+# Monthly batch dependency updates – one grouped PR per ecosystem.
+# Security-relevant updates are grouped together so a single PR
+# can be reviewed, tested by CI, and merged each month.
+version: 2
+updates:
+  - package-ecosystem: "gomod"
+    directory: "/"
+    schedule:
+      interval: "monthly"
+    groups:
+      all-go-deps:
+        patterns:
+          - "*"
+    open-pull-requests-limit: 1
+
+  - package-ecosystem: "npm"
+    directory: "/client"
+    schedule:
+      interval: "monthly"
+    groups:
+      all-npm-deps:
+        patterns:
+          - "*"
+    open-pull-requests-limit: 1
+
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "monthly"
+    groups:
+      all-actions:
+        patterns:
+          - "*"
+    open-pull-requests-limit: 1
