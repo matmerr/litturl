@@ -3,7 +3,7 @@
     <v-card>
       <v-card-title>Settings</v-card-title>
       <v-card-text>
-        <v-text-field label="Words Hash" v-model="settings.wordsSHA256" disabled prepend-icon="mdi-account" />
+        <v-text-field label="Words Hash" v-model="settings.wordsSHA256" disabled prepend-icon="mdi-key-variant" />
         <v-text-field label="Database Type" v-model="settings.db_type" disabled prepend-icon="mdi-database" />
         <v-text-field :label="settings.db_type + ' Address'" v-model="settings.db_address" disabled prepend-icon="mdi-server" />
         <v-text-field :label="settings.db_type + ' Port'" v-model="settings.db_port" disabled prepend-icon="mdi-numeric" />

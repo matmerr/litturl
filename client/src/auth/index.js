@@ -8,13 +8,13 @@ export default {
     authenticated: false
   },
 
-  async Login (creds) {
+  async Login (creds, redirect = '/ui/home') {
     try {
       const response = await axios.post(LOGIN_API, creds)
       localStorage.setItem('id_token', response.data.id_token)
       localStorage.setItem('access_token', response.data.access_token)
       this.user.authenticated = true
-      await router.push('/ui/home')
+      await router.push(redirect)
       return null
     } catch (e) {
       return e.response ? e.response.data : { comment: e.message }

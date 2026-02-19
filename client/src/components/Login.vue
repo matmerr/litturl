@@ -20,7 +20,7 @@
         <p class="text-caption text-right">* indicates required</p>
       </v-card-text>
       <v-card-actions class="justify-center">
-        <v-btn color="primary" variant="elevated" @click="doLogin">Login</v-btn>
+        <v-btn color="primary" variant="elevated" @click="Login">Login</v-btn>
       </v-card-actions>
     </v-card>
   </v-container>
@@ -38,7 +38,7 @@ export default {
     }
   },
   methods: {
-    async doLogin () {
+    async Login () {
       const err = await auth.Login(this.credentials)
       if (err) {
         this.showSnack(err.comment || 'Login failed')

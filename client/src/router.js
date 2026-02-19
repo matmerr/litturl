@@ -18,7 +18,7 @@ async function getStatus () {
   }
 }
 
-async function requireAuthenticated (_to, _from, next) {
+function requireAuthenticated (_to, _from, next) {
   if (auth.isAuthenticated()) {
     next()
   } else {
@@ -26,7 +26,7 @@ async function requireAuthenticated (_to, _from, next) {
   }
 }
 
-async function isReady (_to, _from, next) {
+async function requireServerReady (_to, _from, next) {
   const status = await getStatus()
   if (status && status.ready === true && status.comment === 'server ready') {
     next()
@@ -35,7 +35,7 @@ async function isReady (_to, _from, next) {
   }
 }
 
-async function needConfig (_to, _from, next) {
+async function requireConfig (_to, _from, next) {
   const status = await getStatus()
   if (status && status.ready === false && status.comment === 'config missing') {
     next()
@@ -50,8 +50,8 @@ const router = createRouter({
     { path: '/ui', name: 'ui', component: Home, beforeEnter: requireAuthenticated },
     { path: '/ui/home', name: 'home', component: Home, beforeEnter: requireAuthenticated },
     { path: '/ui/settings', name: 'settings', component: Settings, beforeEnter: requireAuthenticated },
-    { path: '/ui/login', name: 'login', component: Login, beforeEnter: isReady },
-    { path: '/ui/config', name: 'config', component: Config, beforeEnter: needConfig },
+    { path: '/ui/login', name: 'login', component: Login, beforeEnter: requireServerReady },
+    { path: '/ui/config', name: 'config', component: Config, beforeEnter: requireConfig },
     { path: '/:pathMatch(.*)*', redirect: '/ui' }
   ]
 })

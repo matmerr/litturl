@@ -27,7 +27,7 @@
               </tr>
             </thead>
             <tbody>
-              <tr v-for="(url, i) in urlList" :key="i">
+              <tr v-for="(url, i) in urlList" :key="url.newUrl || i">
                 <td>{{ url.newUrl }}</td>
                 <td>{{ url.success }}</td>
               </tr>
